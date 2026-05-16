@@ -82,9 +82,17 @@ tailwind.config = { theme: { extend: {
 // === CONFIG ===
 const MARKET_SLUG = 'silicon-valley-condo-market';
 const SUPABASE_URL = 'https://kfqphwerygccpzntbbif.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtmcXBod2VyeWdjY3B6bnRiYmlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzOTgxODQsImV4cCI6MjA5MTk3NDE4NH0.FGQD3BMLVLD9lE8LUBUjD3SqKhsCxjdnCiGV8MMnqpg'; // From Supabase API settings → anon public
+// Paste your anon key below (the long JWT starting with "eyJ...").
+// Get it from Supabase API settings → anon public.
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtmcXBod2VyeWdjY3B6bnRiYmlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzOTgxODQsImV4cCI6MjA5MTk3NDE4NH0.FGQD3BMLVLD9lE8LUBUjD3SqKhsCxjdnCiGV8MMnqpg';
 
-if (SUPABASE_ANON_KEY === 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtmcXBod2VyeWdjY3B6bnRiYmlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzOTgxODQsImV4cCI6MjA5MTk3NDE4NH0.FGQD3BMLVLD9lE8LUBUjD3SqKhsCxjdnCiGV8MMnqpg') {
+// Validate the key shape — works regardless of any find-and-replace pattern.
+// A valid Supabase anon key is a JWT, always starts with "eyJ" and is well over 100 chars.
+function isValidAnonKey(k) {
+  return typeof k === 'string' && k.startsWith('eyJ') && k.length > 100;
+}
+
+if (!isValidAnonKey(SUPABASE_ANON_KEY)) {
   document.getElementById('app').innerHTML = `<div class="card max-w-2xl mx-auto" style="border-color:rgba(212,165,116,0.5)"><h1 class="font-display text-2xl italic mb-3">Setup required</h1><p class="text-cream/75 mb-3">Paste your Supabase anon key into <code class="font-mono text-gold">SUPABASE_ANON_KEY</code> in this file and redeploy.</p><p class="text-cream/55 text-sm">Get the key from <a href="https://supabase.com/dashboard/project/kfqphwerygccpzntbbif/settings/api" target="_blank" class="text-gold underline">Supabase API settings → anon public</a>.</p></div>`;
   throw new Error('Configure SUPABASE_ANON_KEY');
 }
