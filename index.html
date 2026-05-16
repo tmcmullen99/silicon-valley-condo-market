@@ -2,451 +2,1088 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Silicon Valley Condo Market · Every condo, indexed and analyzed</title>
-<meta name="description" content="Every Silicon Valley condo, indexed and analyzed. Independent brokerage by McMullen Properties LLC.">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<title>Silicon Valley Condo Market — every unit, every sale comp</title>
+<meta name="description" content="Every Silicon Valley condo, indexed and analyzed. Built by an independent broker for buyers and homeowners who want clarity.">
+<meta property="og:title" content="Silicon Valley Condo Market">
+<meta property="og:description" content="Every Silicon Valley condo, indexed and analyzed.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0f131d">
+<script>
+window.MARKET_BY_HOST = {
+  'siliconvalleycondomarket.com': {
+    slug: 'silicon-valley-condo-market',
+    name: 'Silicon Valley',
+    domain: 'siliconvalleycondomarket.com',
+    centroid: [37.3300, -121.9500],
+    zoom: 11,
+    heroImage: 'https://www.kimley-horn.com/wp-content/uploads/2025/09/CA_San-Jose-2048x1304.jpeg',
+    heroEyebrow: 'Live · Launched May 16, 2026',
+    cities: [
+      { slug: 'campbell',     name: 'Campbell'     },
+      { slug: 'san-jose',     name: 'San Jose'     },
+      { slug: 'santa-clara',  name: 'Santa Clara'  },
+      { slug: 'sunnyvale',    name: 'Sunnyvale'    }
+    ]
+  },
+  'sanfranciscocondomarket.com': {
+    slug: 'san-francisco-condo-market',
+    name: 'San Francisco',
+    domain: 'sanfranciscocondomarket.com',
+    centroid: [37.7749, -122.4194],
+    zoom: 12,
+    heroImage: null,
+    heroEyebrow: 'Live',
+    cities: [
+      { slug: 'san-francisco', name: 'San Francisco' }
+    ]
+  }
+};
+window.CONFIG = {
+  SUPABASE_URL: 'https://kfqphwerygccpzntbbif.supabase.co',
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtmcXBod2VyeWdjY3B6bnRiYmlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzOTgxODQsImV4cCI6MjA5MTk3NDE4NH0.FGQD3BMLVLD9lE8LUBUjD3SqKhsCxjdnCiGV8MMnqpg',
+  CONTACT_EMAIL: 'tim@mcmullen.properties',
+  BROKERAGE: 'McMullen Properties LLC',
+  DRE: '02016832',
+  DEFAULT_HOST: 'siliconvalleycondomarket.com'
+};
+window.MARKET = window.MARKET_BY_HOST[window.location.hostname] || window.MARKET_BY_HOST[window.CONFIG.DEFAULT_HOST];
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..700&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,700&family=DM+Sans:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
-body{background:#0f131d;color:#e8e3d8;font-family:'DM Sans',system-ui,sans-serif;line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased}
-a{color:inherit;text-decoration:none}
-.playfair{font-family:'Playfair Display',Georgia,serif}
-.mono{font-family:'JetBrains Mono',monospace}
-.gold{color:#d4a574}
+:root{
+  --navy:#0f131d;
+  --navy-2:#1a1f2e;
+  --navy-3:#252b3d;
+  --line:rgba(232,227,216,0.08);
+  --line-strong:rgba(232,227,216,0.18);
+  --cream:#e8e3d8;
+  --cream-dim:rgba(232,227,216,0.62);
+  --cream-faint:rgba(232,227,216,0.4);
+  --gold:#d4a574;
+  --gold-dim:rgba(212,165,116,0.85);
+  --rose:#c98a8a;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--navy);color:var(--cream);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{display:flex;flex-direction:column;min-height:100vh}
+a{color:var(--gold);text-decoration:none;border-bottom:1px solid transparent;transition:border-color .15s ease}
+a:hover{border-bottom-color:var(--gold)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-dim)}
+.serif{font-family:var(--serif)}
+.mono{font-family:var(--mono)}
 
-/* NAV */
-.nav{position:sticky;top:0;z-index:50;background:rgba(15,19,29,0.92);backdrop-filter:blur(8px);border-bottom:1px solid rgba(232,227,216,0.08)}
-.nav-inner{max-width:1280px;margin:0 auto;padding:18px 32px;display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap}
-.brand{font-family:'Playfair Display',serif;font-style:italic;font-size:22px;letter-spacing:0.01em}
-.nav-links{display:flex;gap:28px;flex-wrap:wrap}
-.nav-links a{font-size:12px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(232,227,216,0.65);transition:color 0.15s}
-.nav-links a:hover,.nav-links a.active{color:#e8e3d8}
+header.site{border-bottom:1px solid var(--line);padding:1.4rem 0;position:sticky;top:0;background:rgba(15,19,29,0.92);backdrop-filter:saturate(140%) blur(8px);z-index:50}
+header.site .wrap{max-width:1280px;margin:0 auto;padding:0 1.8rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.brand{font-family:var(--serif);font-size:1.45rem;font-weight:500;color:var(--cream);letter-spacing:-.01em;border-bottom:none}
+.brand .accent{color:var(--gold);font-style:italic}
+nav.primary{display:flex;gap:1.6rem;align-items:center;flex-wrap:wrap}
+nav.primary a{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--cream-dim);border-bottom:none;padding:.4rem .1rem;transition:color .15s ease}
+nav.primary a:hover{color:var(--cream)}
+nav.primary a.active{color:var(--gold);border-bottom:1px solid var(--gold)}
 
-/* PAGE */
-.page{max-width:1280px;margin:0 auto;padding:64px 32px 96px}
-.page-narrow{max-width:980px;margin:0 auto;padding:64px 32px 96px}
+main{flex:1;width:100%;display:flex;flex-direction:column}
+.container{max-width:1280px;width:100%;margin:0 auto;padding:0 1.8rem}
 
-/* HERO */
-.hero{margin-bottom:56px}
-.eyebrow{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:#d4a574;margin-bottom:16px}
-.eyebrow.gray{color:rgba(232,227,216,0.55)}
-.hero h1{font-family:'Playfair Display',serif;font-style:italic;font-weight:400;font-size:clamp(40px,6vw,68px);line-height:1.05;margin-bottom:18px}
-.hero-sub{color:rgba(232,227,216,0.7);max-width:680px;font-size:17px}
+.hero{position:relative;min-height:78vh;display:flex;align-items:flex-end;overflow:hidden;background:var(--navy)}
+.hero .bgimg{position:absolute;inset:0;background-position:center 35%;background-size:cover;background-repeat:no-repeat;z-index:0}
+.hero .overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,19,29,0.35) 0%,rgba(15,19,29,0.30) 40%,rgba(15,19,29,0.78) 78%,rgba(15,19,29,1) 100%);z-index:1}
+.hero .content{position:relative;z-index:2;width:100%;padding:4rem 0 3.5rem}
+.hero .content .inner{max-width:1280px;margin:0 auto;padding:0 1.8rem}
+.hero h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.6rem,5.8vw,5rem);line-height:1.02;letter-spacing:-.025em;margin:1rem 0 1.4rem;max-width:16ch;color:var(--cream)}
+.hero h1 em{color:var(--gold);font-style:italic;font-weight:400}
+.hero .sub{max-width:60ch;color:var(--cream-dim);font-size:1.08rem;line-height:1.55}
+.hero.no-image .bgimg{display:none}
+.hero.no-image{min-height:auto;padding:2rem 0 0}
+.hero.no-image .overlay{display:none}
 
-/* STATS */
-.stats{display:grid;gap:12px;margin:32px 0;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
-.stat{background:#1a1f2e;border:1px solid rgba(232,227,216,0.10);border-radius:8px;padding:22px}
-.stat-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(232,227,216,0.55);margin-bottom:12px}
-.stat-value{font-family:'Playfair Display',serif;font-style:italic;font-size:30px;line-height:1}
-.stat-sub{font-size:11px;color:rgba(232,227,216,0.5);margin-top:6px;font-family:'JetBrains Mono',monospace}
+.stat-strip{background:var(--navy);border-bottom:1px solid var(--line);padding:2.5rem 0}
+.stat-strip .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--line)}
+.stat-strip .stat{background:var(--navy);padding:1.6rem 1.5rem;display:flex;flex-direction:column;gap:.55rem;min-height:120px}
+.stat-strip .stat .label{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--cream-faint)}
+.stat-strip .stat .value{font-family:var(--serif);font-size:2.6rem;font-weight:400;color:var(--cream);line-height:1;font-style:italic;letter-spacing:-.015em}
+.stat-strip .stat .meta{font-size:.82rem;color:var(--cream-dim);margin-top:auto}
 
-/* BUILDING GRID */
-.bldg-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(290px,1fr))}
-.b-card{display:block;background:#1a1f2e;border:1px solid rgba(232,227,216,0.10);border-radius:10px;padding:22px;transition:all 0.15s}
-.b-card:hover{border-color:rgba(212,165,116,0.5);transform:translateY(-2px)}
-.b-card-name{font-family:'Playfair Display',serif;font-style:italic;font-size:22px;line-height:1.15;margin-bottom:6px}
-.b-card-addr{font-size:13px;color:rgba(232,227,216,0.6);margin-bottom:16px}
-.b-card-row{display:flex;justify-content:space-between;align-items:baseline;font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(232,227,216,0.55);padding-top:14px;border-top:1px solid rgba(232,227,216,0.06)}
-.b-card-row strong{color:#d4a574;font-weight:500}
+section.page{padding:4.5rem 0 1rem}
+section.page + section.page{padding-top:2rem}
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:1.5rem;margin-bottom:1.8rem;flex-wrap:wrap}
+.section-head h2{font-family:var(--serif);font-size:clamp(1.8rem,3.2vw,2.6rem);font-weight:400;letter-spacing:-.015em;line-height:1.05}
+.section-head h2 em{color:var(--gold);font-style:italic}
+.section-head .lead{color:var(--cream-dim);max-width:50ch;margin-top:.6rem;font-size:.98rem}
 
-/* CITY CARDS */
-.city-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-top:32px}
-.city-card{background:#1a1f2e;border:1px solid rgba(232,227,216,0.10);border-radius:10px;padding:24px;transition:all 0.15s}
-.city-card.active:hover{border-color:rgba(212,165,116,0.5);transform:translateY(-2px)}
-.city-card.muted{opacity:0.55}
-.city-card-name{font-family:'Playfair Display',serif;font-style:italic;font-size:24px;margin-bottom:8px}
+.search-bar{display:flex;align-items:center;gap:.85rem;background:var(--navy-2);border:1px solid var(--line-strong);border-radius:6px;padding:.65rem .9rem;flex:1;min-width:240px;max-width:380px}
+.search-bar input{background:transparent;border:none;color:var(--cream);font-family:var(--sans);font-size:.95rem;flex:1;outline:none}
+.search-bar input::placeholder{color:var(--cream-faint)}
+.search-bar .icon{color:var(--cream-faint);font-size:.95rem}
+.search-bar .clear{background:none;border:none;color:var(--cream-faint);cursor:pointer;font-size:1.1rem;line-height:1;padding:0 .2rem;display:none}
+.search-bar.has-value .clear{display:block}
+.result-count{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--cream-faint)}
 
-/* SECTION */
-.section{margin:56px 0}
-.section h2{font-family:'Playfair Display',serif;font-style:italic;font-size:30px;margin-bottom:8px;font-weight:400}
-.section-sub{color:rgba(232,227,216,0.55);font-size:14px;margin-bottom:24px}
+.map-wrap{position:relative;height:560px;background:var(--navy-2);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.map-wrap .leaflet-container{height:100%;width:100%;background:var(--navy-2);font-family:var(--sans)}
+.map-wrap .leaflet-popup-content-wrapper{background:var(--navy);color:var(--cream);border-radius:4px;border:1px solid var(--line-strong);box-shadow:0 6px 24px rgba(0,0,0,0.4)}
+.map-wrap .leaflet-popup-tip{background:var(--navy);border:1px solid var(--line-strong)}
+.map-wrap .leaflet-popup-content{margin:0;padding:0;min-width:200px}
+.map-wrap .leaflet-popup-close-button{color:var(--cream-faint)}
+.map-wrap .leaflet-popup-close-button:hover{color:var(--gold)}
+.map-pop{padding:.9rem 1rem .85rem}
+.map-pop .name{font-family:var(--serif);font-size:1.15rem;font-weight:400;color:var(--cream);margin-bottom:.25rem;line-height:1.2}
+.map-pop .meta{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--cream-faint);margin-bottom:.7rem}
+.map-pop .cta{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);border-bottom:none;display:inline-block}
+.map-pop .cta:hover{border-bottom:1px solid var(--gold)}
+@media (max-width:680px){.map-wrap{height:440px}}
 
-/* SALES TABLE */
-.sales-table{background:#1a1f2e;border:1px solid rgba(232,227,216,0.10);border-radius:10px;overflow:hidden}
-.sales-row{display:grid;grid-template-columns:110px 1fr 140px;gap:16px;align-items:center;padding:14px 24px;border-bottom:1px solid rgba(232,227,216,0.06);font-size:14px}
-.sales-row:last-child{border-bottom:0}
-.sales-row:hover{background:rgba(232,227,216,0.02)}
-.sales-head{background:rgba(232,227,216,0.03);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(232,227,216,0.5)}
-.sales-date{font-family:'JetBrains Mono',monospace;font-size:13px;color:rgba(232,227,216,0.7)}
-.sales-addr{color:#e8e3d8}
-.sales-price{text-align:right;font-family:'JetBrains Mono',monospace;font-size:14px;color:#d4a574}
+table.menu{width:100%;border-collapse:collapse;font-size:.95rem;background:var(--navy-2);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+table.menu thead th{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--cream-faint);text-align:left;padding:.95rem 1rem;border-bottom:1px solid var(--line-strong);font-weight:500;cursor:pointer;user-select:none;white-space:nowrap;transition:color .15s ease}
+table.menu thead th:hover{color:var(--cream)}
+table.menu thead th.num{text-align:right}
+table.menu thead th.sortable::after{content:"";display:inline-block;margin-left:.4rem;opacity:.4;font-size:.7em;vertical-align:1px}
+table.menu thead th.sort-asc::after{content:"↑";opacity:1;color:var(--gold)}
+table.menu thead th.sort-desc::after{content:"↓";opacity:1;color:var(--gold)}
+table.menu tbody td{padding:.95rem 1rem;border-bottom:1px solid var(--line);color:var(--cream);transition:background .15s ease}
+table.menu tbody tr{cursor:pointer;transition:background .12s ease}
+table.menu tbody tr:hover td{background:var(--navy-3)}
+table.menu tbody tr:last-child td{border-bottom:none}
+table.menu td.num{text-align:right;font-variant-numeric:tabular-nums}
+table.menu td.muted{color:var(--cream-dim)}
+table.menu td.name{font-family:var(--serif);font-size:1.05rem;font-weight:400}
+table.menu .empty-row td{text-align:center;padding:2rem 1rem;color:var(--cream-dim);cursor:default}
+table.menu .empty-row:hover td{background:transparent}
+@media (max-width:780px){table.menu th.hide-md,table.menu td.hide-md{display:none}}
+@media (max-width:560px){table.menu th.hide-sm,table.menu td.hide-sm{display:none}}
 
-/* CTA */
-.cta-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));margin-top:32px}
-.cta{background:#1a1f2e;border:1px solid rgba(232,227,216,0.10);border-radius:10px;padding:28px}
-.cta h3{font-family:'Playfair Display',serif;font-style:italic;font-size:24px;margin-bottom:8px;font-weight:400}
-.cta p{color:rgba(232,227,216,0.7);font-size:14px;margin-bottom:18px}
-.btn{display:inline-block;background:#d4a574;color:#0f131d;padding:12px 22px;border-radius:6px;font-weight:600;font-size:13px;letter-spacing:0.02em;font-family:inherit;transition:opacity 0.15s;border:none;cursor:pointer}
-.btn:hover{opacity:0.88}
-.btn.outline{background:transparent;color:#d4a574;border:1px solid #d4a574}
+.intel-teaser{background:var(--navy-2);border:1px solid var(--line);border-radius:6px;padding:2.5rem 2.2rem;display:grid;grid-template-columns:1fr 1.3fr;gap:2.5rem;align-items:center}
+.intel-teaser .left{display:flex;flex-direction:column;gap:1.2rem}
+.intel-teaser .right{display:flex;flex-direction:column;gap:1.4rem}
+.intel-teaser h2{font-family:var(--serif);font-size:clamp(1.8rem,3.2vw,2.6rem);font-weight:400;letter-spacing:-.015em;line-height:1.05}
+.intel-teaser h2 em{color:var(--gold);font-style:italic}
+.intel-teaser .lead{color:var(--cream-dim);max-width:42ch;font-size:1rem}
+.intel-mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.intel-mini{background:var(--navy-3);border:1px solid var(--line);border-radius:5px;padding:1.1rem 1.1rem .9rem;display:flex;flex-direction:column;gap:.4rem;min-height:108px}
+.intel-mini .label{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--cream-faint)}
+.intel-mini .value{font-family:var(--serif);font-size:1.7rem;font-weight:400;font-style:italic;color:var(--cream);line-height:1;letter-spacing:-.01em}
+.intel-mini .meta{font-size:.78rem;color:var(--cream-dim);margin-top:auto}
+.sparkline{background:var(--navy-3);border:1px solid var(--line);border-radius:5px;padding:1rem 1.2rem;height:110px;display:flex;flex-direction:column;gap:.4rem}
+.sparkline .header{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--cream-faint)}
+.sparkline svg{flex:1;width:100%;display:block}
+@media (max-width:880px){.intel-teaser{grid-template-columns:1fr;gap:1.8rem;padding:2rem 1.6rem}}
+@media (max-width:560px){.intel-mini-grid{grid-template-columns:1fr;gap:.7rem}}
 
-/* BACK LINK */
-.back-link{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(232,227,216,0.55);margin-bottom:24px;display:inline-block}
-.back-link:hover{color:#d4a574}
+.btn{display:inline-flex;align-items:center;gap:.55rem;padding:.85rem 1.4rem;border:1px solid var(--line-strong);border-radius:4px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--cream);background:transparent;cursor:pointer;text-decoration:none;transition:all .15s ease;border-bottom:1px solid var(--line-strong);align-self:flex-start}
+.btn:hover{border-color:var(--gold);color:var(--gold)}
+.btn.primary{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.btn.primary:hover{background:transparent;color:var(--gold)}
+.btn .arrow{transition:transform .15s ease}
+.btn:hover .arrow{transform:translateX(3px)}
 
-/* UTILITY */
-.loading{color:rgba(232,227,216,0.5);padding:60px 0;text-align:center;font-style:italic}
-.empty{color:rgba(232,227,216,0.6);padding:60px 32px;text-align:center;background:rgba(232,227,216,0.02);border:1px solid rgba(232,227,216,0.06);border-radius:10px}
-.empty h3{font-family:'Playfair Display',serif;font-style:italic;font-size:22px;margin-bottom:10px;color:#e8e3d8}
-.error{background:rgba(216,128,128,0.10);border:1px solid rgba(216,128,128,0.30);color:#e8a8a8;padding:24px;border-radius:8px;margin:24px 0}
-.badge{display:inline-block;padding:3px 10px;border-radius:12px;background:rgba(212,165,116,0.12);color:#d4a574;font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:0.08em;text-transform:uppercase}
-.badge.gray{background:rgba(232,227,216,0.07);color:rgba(232,227,216,0.7)}
-.setup{background:#1a1f2e;border:1px solid rgba(212,165,116,0.30);border-radius:10px;padding:32px;max-width:580px;margin:32px auto;color:rgba(232,227,216,0.85)}
-.setup h2{font-family:'Playfair Display',serif;font-style:italic;font-size:24px;margin-bottom:16px}
-.setup code{background:rgba(232,227,216,0.06);padding:2px 8px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#d4a574}
+.crumbs{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--cream-faint);margin:2.5rem 0 1.4rem}
+.crumbs a{color:var(--cream-faint);border-bottom:none}
+.crumbs a:hover{color:var(--cream)}
+.crumbs .sep{margin:0 .55rem;opacity:.5}
 
-/* FOOTER */
-footer{border-top:1px solid rgba(232,227,216,0.08);margin-top:96px;padding:48px 32px;color:rgba(232,227,216,0.5);font-size:13px}
-.footer-inner{max-width:1280px;margin:0 auto;display:grid;gap:32px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-footer h4{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(232,227,216,0.4);margin-bottom:10px}
-.footer-bottom{max-width:1280px;margin:32px auto 0;padding:24px 0 0;border-top:1px solid rgba(232,227,216,0.06);font-size:12px;color:rgba(232,227,216,0.4);text-align:center}
+.building-hero{display:grid;grid-template-columns:1.1fr .9fr;gap:1.8rem;align-items:stretch;margin:.5rem 0 2.5rem}
+.building-hero .info{display:flex;flex-direction:column;gap:1rem;justify-content:center}
+.building-hero h1{font-family:var(--serif);font-size:clamp(2rem,4.4vw,3.4rem);font-weight:400;line-height:1.05;letter-spacing:-.015em}
+.building-hero .info .meta{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--cream-faint);display:flex;gap:1rem;flex-wrap:wrap}
+.building-hero .map{background:var(--navy-2);border:1px solid var(--line);border-radius:6px;min-height:340px;overflow:hidden;position:relative}
+.building-hero .map .leaflet-container{height:100%;width:100%;background:var(--navy-2);font-family:var(--sans)}
+.map-fallback{display:flex;align-items:center;justify-content:center;height:100%;color:var(--cream-faint);font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+@media (max-width:780px){.building-hero{grid-template-columns:1fr}.building-hero .map{min-height:260px;order:-1}}
 
-@media (max-width:640px){
-  .nav-inner{padding:14px 20px}
-  .nav-links{gap:14px}
-  .nav-links a{font-size:11px}
-  .page,.page-narrow{padding:40px 20px 60px}
-  .sales-row{grid-template-columns:88px 1fr 100px;padding:12px 16px;gap:10px}
-  .stat{padding:18px}
-  .stat-value{font-size:24px}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:2.5rem}
+.stats-row .stat{background:var(--navy-2);border:1px solid var(--line);border-radius:6px;padding:1.15rem 1.3rem;display:flex;flex-direction:column;gap:.55rem;min-height:100px}
+.stats-row .stat .label{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--cream-faint)}
+.stats-row .stat .value{font-family:var(--serif);font-size:1.85rem;font-weight:400;color:var(--cream);line-height:1;font-style:italic;letter-spacing:-.01em}
+.stats-row .stat .meta{font-size:.85rem;color:var(--cream-dim);margin-top:auto}
+
+.panel{background:var(--navy-2);border:1px solid var(--line);border-radius:6px;padding:1.6rem 1.7rem}
+.panel + .panel{margin-top:1.4rem}
+.panel h2{font-family:var(--serif);font-size:1.5rem;font-weight:400;letter-spacing:-.005em;margin-bottom:.3rem}
+.panel .sub{color:var(--cream-dim);font-size:.92rem;margin-bottom:1.3rem}
+
+table.sales{width:100%;border-collapse:collapse;font-size:.9rem}
+table.sales th{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--cream-faint);text-align:left;padding:.55rem .7rem;border-bottom:1px solid var(--line-strong);font-weight:500}
+table.sales td{padding:.7rem;border-bottom:1px solid var(--line);color:var(--cream)}
+table.sales tr:last-child td{border-bottom:none}
+table.sales td.num{text-align:right;font-variant-numeric:tabular-nums}
+table.sales td.muted{color:var(--cream-dim)}
+table.sales tbody tr:hover{background:rgba(255,255,255,0.015)}
+@media (max-width:680px){table.sales th.hide-sm,table.sales td.hide-sm{display:none}}
+
+.cta-row{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:.8rem}
+
+.intel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:2rem}
+.chart-wrap{background:var(--navy-2);border:1px solid var(--line);border-radius:6px;padding:1.6rem 1.7rem;margin-bottom:1.4rem}
+.chart-wrap svg{width:100%;height:auto;display:block}
+.chart-wrap .axis text{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;fill:var(--cream-faint)}
+.chart-wrap .grid line{stroke:var(--line);stroke-dasharray:2 4}
+.chart-wrap .bar{fill:var(--gold);opacity:.85}
+.chart-wrap .bar:hover{opacity:1}
+
+.alert{padding:1rem 1.2rem;border-radius:6px;font-size:.95rem;background:rgba(201,138,138,0.07);border:1px solid rgba(201,138,138,0.25);color:var(--rose)}
+.alert.empty{background:transparent;border-color:var(--line);color:var(--cream-dim);text-align:center;padding:2.5rem 1rem}
+
+.loading{display:flex;align-items:center;justify-content:center;padding:6rem 1rem;color:var(--cream-faint);font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase}
+
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem}
+.card{background:var(--navy-2);border:1px solid var(--line);border-radius:6px;padding:1.4rem 1.5rem;text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:.65rem;transition:border-color .15s ease,transform .15s ease;border-bottom:1px solid var(--line);min-height:160px}
+.card:hover{border-color:var(--gold-dim);transform:translateY(-2px)}
+.card h3{font-family:var(--serif);font-size:1.35rem;font-weight:400;letter-spacing:-.005em}
+.card .meta{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--cream-faint);display:flex;gap:1rem;flex-wrap:wrap}
+.card .desc{font-size:.92rem;color:var(--cream-dim);line-height:1.55}
+.card .cta{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-top:auto}
+
+footer.site{border-top:1px solid var(--line);padding:3rem 0 2.5rem;margin-top:5rem;background:var(--navy)}
+footer.site .wrap{max-width:1280px;margin:0 auto;padding:0 1.8rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2rem}
+footer.site h4{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--cream-faint);margin-bottom:.9rem;font-weight:500}
+footer.site p,footer.site a{font-size:.9rem;color:var(--cream-dim);line-height:1.7}
+footer.site a{border-bottom:none}
+footer.site a:hover{color:var(--gold)}
+footer .colophon{grid-column:1/-1;border-top:1px solid var(--line);padding-top:1.4rem;text-align:center;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--cream-faint)}
+
+@media (max-width:680px){
+  .container{padding:0 1.2rem}
+  nav.primary{gap:.9rem}
+  nav.primary a{font-size:10px}
+  header.site .wrap{flex-direction:column;gap:.9rem;align-items:flex-start}
+  .brand{font-size:1.25rem}
+  .hero{min-height:64vh}
+  .hero h1{font-size:2.4rem}
+  .stat-strip .stat .value{font-size:2rem}
+  section.page{padding:3rem 0 .5rem}
+  footer.site{margin-top:3rem}
 }
 </style>
 </head>
 <body>
 
-<nav class="nav">
-  <div class="nav-inner">
-    <a href="#/" class="brand">Silicon Valley <span class="gold">Condo Market</span></a>
-    <div class="nav-links">
-      <a href="#/">Home</a>
-      <a href="#/city/campbell">Campbell</a>
-      <a href="#/city/san-jose">San Jose</a>
-      <a href="#/city/santa-clara">Santa Clara</a>
-      <a href="#/city/sunnyvale">Sunnyvale</a>
-    </div>
+<header class="site">
+  <div class="wrap">
+    <a href="#/" class="brand" id="brand"></a>
+    <nav class="primary" id="nav-primary"></nav>
   </div>
-</nav>
+</header>
 
 <main id="app">
-  <div class="page"><div class="loading">Loading…</div></div>
+  <div class="loading">Loading…</div>
 </main>
 
-<footer>
-  <div class="footer-inner">
+<footer class="site">
+  <div class="wrap">
     <div>
       <h4>Brokerage</h4>
-      <div>McMullen Properties LLC</div>
-      <div style="margin-top:4px;opacity:0.7">CA DRE #02016832</div>
-      <div style="margin-top:4px;opacity:0.7">Independent brokerage</div>
+      <p>McMullen Properties LLC<br>CA DRE #02016832<br>Independent brokerage</p>
     </div>
     <div>
       <h4>Contact</h4>
-      <div><a href="mailto:tim@mcmullen.properties" class="gold">tim@mcmullen.properties</a></div>
+      <p><a href="mailto:tim@mcmullen.properties">tim@mcmullen.properties</a></p>
     </div>
     <div>
       <h4>About</h4>
-      <div style="opacity:0.7">Every Silicon Valley condo, indexed and analyzed. Built by an independent broker, for buyers and homeowners who want clarity.</div>
+      <p id="footer-about"></p>
     </div>
+    <div class="colophon" id="colophon"></div>
   </div>
-  <div class="footer-bottom">© 2026 McMullen Properties LLC · siliconvalleycondomarket.com</div>
 </footer>
 
-<script type="module">
-const SUPABASE_URL = 'https://kfqphwerygccpzntbbif.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtmcXBod2VyeWdjY3B6bnRiYmlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzOTgxODQsImV4cCI6MjA5MTk3NDE4NH0.FGQD3BMLVLD9lE8LUBUjD3SqKhsCxjdnCiGV8MMnqpg';
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<script>
+(function(){
+'use strict';
+
+const CFG = window.CONFIG;
+const MARKET = window.MARKET;
+const REST = CFG.SUPABASE_URL + '/rest/v1';
+const HEADERS = {
+  apikey: CFG.SUPABASE_ANON_KEY,
+  Authorization: 'Bearer ' + CFG.SUPABASE_ANON_KEY,
+  'Content-Type': 'application/json',
+  Accept: 'application/json'
+};
+
+const fmt = {
+  money(n){ if(n==null||isNaN(n)) return '—'; const v=Number(n); if(v>=1e9)return '$'+(v/1e9).toFixed(2)+'B'; if(v>=1e6)return '$'+(v/1e6).toFixed(2)+'M'; if(v>=1e3)return '$'+Math.round(v/1e3)+'K'; return '$'+Math.round(v).toLocaleString(); },
+  moneyFull(n){ if(n==null||isNaN(n)) return '—'; return '$'+Math.round(Number(n)).toLocaleString(); },
+  date(s){ if(!s) return '—'; const d=new Date(s); if(isNaN(d.getTime())) return '—'; return d.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}); },
+  ym(s){ if(!s) return '—'; const d=new Date(s); if(isNaN(d.getTime())) return '—'; return d.toLocaleDateString('en-US',{year:'numeric',month:'short'}); },
+  num(n){ if(n==null||isNaN(n)) return '—'; return Number(n).toLocaleString(); }
+};
+
+const esc = (s) => String(s==null?'':s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+
+async function fetchRest(path){
+  try {
+    const r = await fetch(REST + path, { headers: HEADERS });
+    if(!r.ok) return { data: null, error: 'HTTP ' + r.status };
+    const json = await r.json();
+    return { data: Array.isArray(json) ? json : (json==null?[]:[json]), error: null };
+  } catch (e) {
+    return { data: null, error: String(e && e.message || e) };
+  }
+}
+
+function median(arr){
+  if(!Array.isArray(arr) || arr.length===0) return null;
+  const s = arr.filter(v => v!=null && !isNaN(v)).map(Number).sort((a,b)=>a-b);
+  if(s.length===0) return null;
+  const m = Math.floor(s.length/2);
+  return s.length%2 ? s[m] : (s[m-1]+s[m])/2;
+}
+
+function applyHeader(){
+  const brand = document.getElementById('brand');
+  if(brand) brand.innerHTML = esc(MARKET.name) + ' <span class="accent">Condo Market</span>';
+  const nav = document.getElementById('nav-primary');
+  if(nav){
+    const links = ['<a href="#/" data-route="/">Home</a>'];
+    (MARKET.cities || []).forEach(c => links.push(`<a href="#/city/${esc(c.slug)}" data-route="/city/${esc(c.slug)}">${esc(c.name)}</a>`));
+    links.push('<a href="#/intelligence" data-route="/intelligence">Intelligence</a>');
+    nav.innerHTML = links.join('');
+  }
+  const fa = document.getElementById('footer-about');
+  if(fa) fa.textContent = 'Every ' + MARKET.name + ' condo, indexed and analyzed. Built by an independent broker, for buyers and homeowners who want clarity.';
+  const cl = document.getElementById('colophon');
+  if(cl) cl.textContent = '© ' + new Date().getFullYear() + ' McMullen Properties LLC · ' + MARKET.domain;
+  document.title = MARKET.name + ' Condo Market — every unit, every sale comp';
+}
+
+function updateNav(routePath){
+  document.querySelectorAll('#nav-primary a').forEach(a => {
+    const r = a.getAttribute('data-route') || '';
+    a.classList.toggle('active', r === routePath || (r !== '/' && routePath.indexOf(r) === 0));
+  });
+}
+
+function parseRoute(){
+  let hash = window.location.hash || '';
+  if(hash.indexOf('#') === 0) hash = hash.slice(1);
+  const qIdx = hash.indexOf('?');
+  if(qIdx >= 0) hash = hash.slice(0, qIdx);
+  while(hash.length > 1 && hash.endsWith('/')) hash = hash.slice(0, -1);
+  if(hash === '' || hash === '/') return { name: 'home', path: '/' };
+  const parts = hash.split('/').filter(Boolean);
+  if(parts[0] === 'city' && parts[1]) return { name: 'city', slug: parts[1], path: '/city/' + parts[1] };
+  if(parts[0] === 'building' && parts[1]) return { name: 'building', slug: parts[1], path: '/building/' + parts[1] };
+  if(parts[0] === 'intelligence') return { name: 'intelligence', path: '/intelligence' };
+  return { name: 'notfound', path: hash };
+}
 
 const app = document.getElementById('app');
+function render(html){ app.innerHTML = html; }
+function loading(){ render('<div class="loading">Loading…</div>'); }
+function errorBlock(msg){ return `<div class="container" style="padding-top:3rem"><div class="alert">Couldn't load this page: ${esc(msg)}. <a href="#/">Back to home</a>.</div></div>`; }
 
-// Anon-key shape validator: shows setup card if key is missing/malformed
-if (!SUPABASE_ANON_KEY || !SUPABASE_ANON_KEY.startsWith('eyJ') || SUPABASE_ANON_KEY.length < 100) {
-  app.innerHTML = `<div class="page"><div class="setup">
-    <h2>Setup required</h2>
-    <p>Paste your Supabase anon key into <code>SUPABASE_ANON_KEY</code> in this file and redeploy.</p>
-    <p style="margin-top:14px">Get the key from <a class="gold" href="https://supabase.com/dashboard/project/kfqphwerygccpzntbbif/settings/api">Supabase API settings → anon public</a>.</p>
-  </div></div>`;
-} else {
-  const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
-  const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const _state = { homeBuildings: [], homeMap: null, homeMarkers: new Map(), homeMenuSort: { key: 'units', dir: 'desc' } };
 
-  // ─── Formatters ───────────────────────────────────────────────────
-  const usd = new Intl.NumberFormat('en-US', { style:'currency', currency:'USD', maximumFractionDigits:0 });
-  const usdCompact = new Intl.NumberFormat('en-US', { style:'currency', currency:'USD', notation:'compact', maximumFractionDigits:1 });
-  const numCompact = new Intl.NumberFormat('en-US', { notation:'compact', maximumFractionDigits:1 });
-  const dateShort = d => d ? new Date(d).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' }) : '—';
+async function loadHomeData(){
+  const bldQ = '/v_buildings_with_market?market_slug=eq.' + encodeURIComponent(MARKET.slug)
+             + '&is_catalogued=eq.true'
+             + '&select=building_slug,display_name,unit_count,year_built,neighborhood,city_slug,city_display_name'
+             + '&order=unit_count.desc.nullslast';
+  const bldRes = await fetchRest(bldQ);
+  if(bldRes.error) return { error: bldRes.error };
+  const buildings = Array.isArray(bldRes.data) ? bldRes.data : [];
+  if(buildings.length === 0) return { buildings: [], props: [], sales: [] };
 
-  // ─── Router ──────────────────────────────────────────────────────
-  async function render() {
-    const hash = location.hash.replace(/^#\/?/, '');
-    app.innerHTML = `<div class="page"><div class="loading">Loading…</div></div>`;
-    try {
-      if (hash === '' || hash === '/') return await renderHome();
-      const cityMatch = hash.match(/^city\/([a-z0-9-]+)$/);
-      if (cityMatch) return await renderCity(cityMatch[1]);
-      const bldgMatch = hash.match(/^building\/([a-z0-9-]+)$/);
-      if (bldgMatch) return await renderBuilding(bldgMatch[1]);
-      app.innerHTML = `<div class="page"><div class="empty"><h3>Not found</h3><p>That page doesn't exist yet.</p></div></div>`;
-    } catch (e) {
-      console.error(e);
-      app.innerHTML = `<div class="page"><div class="error">Couldn't load this page: ${e.message}</div></div>`;
-    }
-  }
+  const slugs = buildings.map(b => b.building_slug).filter(Boolean);
+  const slugList = slugs.map(s => '"' + s.replace(/"/g,'') + '"').join(',');
+  const propQ = '/properties?building_slug=in.(' + slugList + ')&select=building_slug,lat,lng&limit=20000';
+  const saleQ = '/building_sales?building_slug=in.(' + slugList + ')&select=building_slug,sale_date,sale_price&limit=20000';
 
-  // ─── HOME ────────────────────────────────────────────────────────
-  async function renderHome() {
-    const { data: market } = await sb.from('markets').select('*').eq('slug','silicon-valley-condo-market').single();
-    const { data: cities } = await sb.from('cities').select('id,slug,display_name,market_status').eq('market_id', market.id).order('display_name');
-    
-    // Stats: across the active SV market
-    const { count: liveBldgs } = await sb.from('buildings').select('slug', { count:'exact', head:true })
-      .in('city_id', cities.map(c => c.id))
-      .eq('is_catalogued', true);
-    const { count: liveProps } = await sb.from('properties').select('property_id', { count:'exact', head:true })
-      .in('building_slug', (await sb.from('buildings').select('slug').eq('is_catalogued', true).in('city_id', cities.map(c => c.id))).data.map(b => b.slug));
-    
-    // City-level building counts
-    const cityCounts = {};
-    for (const c of cities) {
-      const { count } = await sb.from('buildings').select('slug', { count:'exact', head:true }).eq('city_id', c.id).eq('is_catalogued', true);
-      cityCounts[c.slug] = count;
-    }
+  const [propRes, saleRes] = await Promise.all([fetchRest(propQ), fetchRest(saleQ)]);
+  const props = Array.isArray(propRes.data) ? propRes.data : [];
+  const sales = Array.isArray(saleRes.data) ? saleRes.data.filter(s => s.sale_price != null && Number(s.sale_price) > 0) : [];
 
-    app.innerHTML = `
-      <div class="page">
-        <div class="hero">
-          <div class="eyebrow">${market.market_status === 'active' ? '· Live ·' : 'Pre-launch'} ${market.launched_at ? '· Launched ' + dateShort(market.launched_at) : ''}</div>
-          <h1>Every Silicon Valley condo,<br><span class="gold">indexed and analyzed.</span></h1>
-          <p class="hero-sub">Built by an independent broker, for buyers and homeowners who want clarity. No MLS gatekeeping, no algorithmic black boxes — just every condo in every building, every sale, every comp.</p>
-        </div>
+  const propsBySlug = new Map();
+  props.forEach(p => {
+    if(p.lat == null || p.lng == null) return;
+    if(!propsBySlug.has(p.building_slug)) propsBySlug.set(p.building_slug, []);
+    propsBySlug.get(p.building_slug).push([Number(p.lat), Number(p.lng)]);
+  });
+  const salesBySlug = new Map();
+  sales.forEach(s => {
+    if(!salesBySlug.has(s.building_slug)) salesBySlug.set(s.building_slug, []);
+    salesBySlug.get(s.building_slug).push(s);
+  });
 
-        <div class="stats">
-          <div class="stat">
-            <div class="stat-label">Live Buildings</div>
-            <div class="stat-value gold">${liveBldgs ?? 0}</div>
-            <div class="stat-sub">across ${cities.filter(c => cityCounts[c.slug] > 0).length} ${cities.filter(c => cityCounts[c.slug] > 0).length === 1 ? 'city' : 'cities'}</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Units Tracked</div>
-            <div class="stat-value">${liveProps ?? 0}</div>
-            <div class="stat-sub">condominium · individual</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Market</div>
-            <div class="stat-value playfair">SV</div>
-            <div class="stat-sub">${market.market_status}</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Coverage</div>
-            <div class="stat-value">100%</div>
-            <div class="stat-sub">every building, every unit</div>
-          </div>
-        </div>
-
-        <div class="section">
-          <h2>Markets</h2>
-          <div class="section-sub">Click into any city to browse its condo buildings.</div>
-          <div class="city-grid">
-            ${cities.map(c => {
-              const active = (cityCounts[c.slug] ?? 0) > 0;
-              return `
-              <a href="#/city/${c.slug}" class="city-card ${active ? 'active' : 'muted'}">
-                <div class="city-card-name">${c.display_name}</div>
-                <div style="margin:10px 0 14px">
-                  ${active ? `<span class="badge">${cityCounts[c.slug]} buildings</span>` : `<span class="badge gray">Catalog in progress</span>`}
-                </div>
-                <div style="font-size:12px;color:rgba(232,227,216,0.55);font-family:'JetBrains Mono',monospace">${active ? 'View buildings →' : 'Coming soon'}</div>
-              </a>`;
-            }).join('')}
-          </div>
-        </div>
-      </div>`;
-  }
-
-  // ─── CITY ────────────────────────────────────────────────────────
-  async function renderCity(slug) {
-    const { data: city, error: cityErr } = await sb.from('cities').select('*, markets(slug, display_name, market_status)').eq('slug', slug).single();
-    if (cityErr || !city) { app.innerHTML = `<div class="page"><div class="empty"><h3>City not found</h3></div></div>`; return; }
-
-    const { data: bldgs } = await sb.from('v_buildings_with_market').select('*').eq('city_slug', slug).eq('is_catalogued', true).order('display_name');
-
-    // Per-building property stats (one query for all in city)
-    let units = 0, avgValue = null, recentSales = 0;
-    if (bldgs && bldgs.length) {
-      const slugs = bldgs.map(b => b.slug);
-      const { data: props } = await sb.from('properties').select('estimated_value, last_sale_date').in('building_slug', slugs);
-      units = props.length;
-      const vals = props.map(p => p.estimated_value).filter(v => v != null && v > 0);
-      avgValue = vals.length ? vals.reduce((s, v) => s + Number(v), 0) / vals.length : null;
-      const twoYrsAgo = new Date(); twoYrsAgo.setMonth(twoYrsAgo.getMonth() - 24);
-      recentSales = props.filter(p => p.last_sale_date && new Date(p.last_sale_date) > twoYrsAgo).length;
-
-      // Per-building averages for cards
-      const byBldg = {};
-      for (const p of props) {
-        if (!byBldg[p.building_slug]) byBldg[p.building_slug] = { n: 0, sum: 0 };
-        if (p.estimated_value) { byBldg[p.building_slug].n++; byBldg[p.building_slug].sum += Number(p.estimated_value); }
-      }
-      bldgs.forEach(b => {
-        const stats = byBldg[b.slug];
-        b._avgValue = stats && stats.n ? stats.sum / stats.n : null;
-      });
-    }
-
-    app.innerHTML = `
-      <div class="page">
-        <a href="#/" class="back-link">← Back to home</a>
-        <div class="hero">
-          <div class="eyebrow">${city.markets.display_name} · ${city.markets.market_status === 'active' ? 'Live' : city.markets.market_status}</div>
-          <h1>${city.display_name}<span class="gold">.</span></h1>
-          <p class="hero-sub">${bldgs.length} ${bldgs.length === 1 ? 'building' : 'buildings'} catalogued in ${city.display_name}. Every unit, owner, and sale comp.</p>
-        </div>
-
-        ${bldgs.length === 0 ? `
-          <div class="empty">
-            <h3>Catalog in progress</h3>
-            <p>We haven't published ${city.display_name} buildings yet. Check back soon — or email <a class="gold" href="mailto:tim@mcmullen.properties?subject=${encodeURIComponent('Notify me when ' + city.display_name + ' is live')}">tim@mcmullen.properties</a> to be notified.</p>
-          </div>
-        ` : `
-          <div class="stats">
-            <div class="stat">
-              <div class="stat-label">Buildings</div>
-              <div class="stat-value gold">${bldgs.length}</div>
-            </div>
-            <div class="stat">
-              <div class="stat-label">Units</div>
-              <div class="stat-value">${units}</div>
-              <div class="stat-sub">across all buildings</div>
-            </div>
-            <div class="stat">
-              <div class="stat-label">Avg Est. Value</div>
-              <div class="stat-value">${avgValue ? usdCompact.format(avgValue) : '—'}</div>
-              <div class="stat-sub">per unit</div>
-            </div>
-            <div class="stat">
-              <div class="stat-label">Sales · 24mo</div>
-              <div class="stat-value">${recentSales}</div>
-              <div class="stat-sub">recorded</div>
-            </div>
-          </div>
-
-          <div class="section">
-            <h2>Buildings</h2>
-            <div class="bldg-grid">
-              ${bldgs.map(b => `
-                <a href="#/building/${b.slug}" class="b-card">
-                  <div class="b-card-name">${b.display_name}</div>
-                  <div class="b-card-addr">${b.canonical_address ?? ''}</div>
-                  <div class="b-card-row">
-                    <span>${b.unit_count ?? '—'} units</span>
-                    <strong>${b._avgValue ? usdCompact.format(b._avgValue) + ' avg' : '—'}</strong>
-                  </div>
-                </a>
-              `).join('')}
-            </div>
-          </div>
-        `}
-      </div>`;
-  }
-
-  // ─── BUILDING ────────────────────────────────────────────────────
-  async function renderBuilding(slug) {
-    const { data: b, error: bErr } = await sb.from('v_buildings_with_market').select('*').eq('slug', slug).single();
-    if (bErr || !b) { app.innerHTML = `<div class="page"><div class="empty"><h3>Building not found</h3></div></div>`; return; }
-
-    const [{ data: props }, { data: sales }] = await Promise.all([
-      sb.from('properties').select('estimated_value, is_corporate_owner, out_of_state_owner, last_sale_date, last_sale_price').eq('building_slug', slug),
-      sb.from('building_sales').select('*').eq('building_slug', slug).order('sale_date', { ascending: false, nullsFirst: false }).limit(15)
-    ]);
-
-    const n = props.length;
-    const vals = props.map(p => p.estimated_value).filter(v => v != null && v > 0);
-    const avgValue = vals.length ? vals.reduce((s, v) => s + Number(v), 0) / vals.length : null;
-    const twoYrsAgo = new Date(); twoYrsAgo.setMonth(twoYrsAgo.getMonth() - 24);
-    const recentSalesN = props.filter(p => p.last_sale_date && new Date(p.last_sale_date) > twoYrsAgo).length;
-    const oosN = props.filter(p => p.out_of_state_owner).length;
-    const corpN = props.filter(p => p.is_corporate_owner).length;
-
-    const claimSubj = encodeURIComponent(`Claim my unit at ${b.display_name}`);
-    const claimBody = encodeURIComponent(`Hi Tim,\n\nI own a unit at ${b.display_name} (${b.canonical_address}) and would like to claim it on siliconvalleycondomarket.com.\n\nMy unit:\nName on title:\n\nThanks,\n`);
-    const cmaSubj = encodeURIComponent(`CMA request for my unit at ${b.display_name}`);
-    const cmaBody = encodeURIComponent(`Hi Tim,\n\nI'd like a comparative market analysis for my unit at ${b.display_name}.\n\nMy unit:\nApprox. timeline to sell:\n\nThanks,\n`);
-
-    app.innerHTML = `
-      <div class="page-narrow">
-        <a href="#/city/${b.city_slug}" class="back-link">← Back to ${b.city_display_name ?? 'city'}</a>
-        <div class="hero">
-          <div class="eyebrow">${b.neighborhood ?? b.city_display_name} · ${b.city_display_name}</div>
-          <h1>${b.display_name}<span class="gold">.</span></h1>
-          <p class="hero-sub">${b.canonical_address}${b.unit_count ? ` · ${b.unit_count} units` : ''}</p>
-        </div>
-
-        <div class="stats">
-          <div class="stat">
-            <div class="stat-label">Avg Est. Value</div>
-            <div class="stat-value gold">${avgValue ? usdCompact.format(avgValue) : '—'}</div>
-            <div class="stat-sub">${n} ${n === 1 ? 'unit' : 'units'} tracked</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Sales · 24mo</div>
-            <div class="stat-value">${recentSalesN}</div>
-            <div class="stat-sub">${recentSalesN ? Math.round(recentSalesN / n * 100) + '% turnover' : 'no recent sales'}</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Out-of-state</div>
-            <div class="stat-value">${oosN}</div>
-            <div class="stat-sub">${n ? Math.round(oosN / n * 100) + '%' : '—'} of owners</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Corporate</div>
-            <div class="stat-value">${corpN}</div>
-            <div class="stat-sub">${n ? Math.round(corpN / n * 100) + '%' : '—'} LLC / trust</div>
-          </div>
-        </div>
-
-        <div class="section">
-          <h2>Recent sales</h2>
-          <div class="section-sub">${sales.length ? `Last ${sales.length} recorded sales at ${b.display_name}.` : 'No sale comps on record yet.'}</div>
-          ${sales.length ? `
-            <div class="sales-table">
-              <div class="sales-row sales-head">
-                <div>Date</div>
-                <div>Unit</div>
-                <div style="text-align:right">Price</div>
-              </div>
-              ${sales.map(s => `
-                <div class="sales-row">
-                  <div class="sales-date">${dateShort(s.sale_date)}</div>
-                  <div class="sales-addr">${s.unit_address ?? ''}</div>
-                  <div class="sales-price">${s.sale_price ? usd.format(s.sale_price) : '—'}</div>
-                </div>
-              `).join('')}
-            </div>
-          ` : ''}
-        </div>
-
-        <div class="section">
-          <h2>For owners &amp; sellers</h2>
-          <div class="cta-grid">
-            <div class="cta">
-              <h3>Live at ${b.display_name}?</h3>
-              <p>Claim your unit and unlock Make-Me-Move pricing, neighbor introductions, and direct buyer offers.</p>
-              <a class="btn" href="mailto:tim@mcmullen.properties?subject=${claimSubj}&body=${claimBody}">Claim my unit</a>
-            </div>
-            <div class="cta">
-              <h3>Thinking of selling?</h3>
-              <p>Get a personalized CMA built from real comps at ${b.display_name}, not a Zestimate.</p>
-              <a class="btn outline" href="mailto:tim@mcmullen.properties?subject=${cmaSubj}&body=${cmaBody}">Request a CMA</a>
-            </div>
-          </div>
-        </div>
-      </div>`;
-  }
-
-  window.addEventListener('hashchange', render);
-  render();
+  const enriched = buildings.map(b => {
+    const coords = propsBySlug.get(b.building_slug) || [];
+    const centroid = coords.length > 0
+      ? [coords.reduce((a,c)=>a+c[0],0)/coords.length, coords.reduce((a,c)=>a+c[1],0)/coords.length]
+      : null;
+    const bsales = salesBySlug.get(b.building_slug) || [];
+    const sorted = bsales.slice().sort((a,b) => new Date(b.sale_date||0) - new Date(a.sale_date||0));
+    return {
+      slug: b.building_slug,
+      name: b.display_name || b.building_slug,
+      units: Number(b.unit_count || 0),
+      year_built: b.year_built || null,
+      neighborhood: b.neighborhood || '',
+      city_slug: b.city_slug || '',
+      city_name: b.city_display_name || '',
+      coords: coords,
+      centroid: centroid,
+      sales_count: bsales.length,
+      median: median(bsales.map(s => Number(s.sale_price))),
+      last_sale: sorted.length > 0 ? sorted[0] : null
+    };
+  });
+  return { buildings: enriched, props, sales };
 }
+
+async function renderHome(){
+  loading();
+  updateNav('/');
+
+  const data = await loadHomeData();
+  if(data.error){ render(errorBlock(data.error)); return; }
+  const buildings = data.buildings || [];
+  const sales = data.sales || [];
+
+  _state.homeBuildings = buildings;
+  const totalBuildings = buildings.length;
+  const totalUnits = buildings.reduce((s, b) => s + b.units, 0);
+  const totalSales = sales.length;
+  const cutoff24 = new Date(); cutoff24.setMonth(cutoff24.getMonth() - 24);
+  const recent24 = sales.filter(s => s.sale_date && new Date(s.sale_date) >= cutoff24);
+  const recent24Count = recent24.length;
+  const medianRecent = median(recent24.map(s => Number(s.sale_price)));
+  const hottest = buildings.slice().sort((a,b) => {
+    const aRec = (a.sales_count === 0 || !a.last_sale) ? 0 : a.sales_count;
+    const bRec = (b.sales_count === 0 || !b.last_sale) ? 0 : b.sales_count;
+    const aLast = a.last_sale ? new Date(a.last_sale.sale_date||0).getTime() : 0;
+    const bLast = b.last_sale ? new Date(b.last_sale.sale_date||0).getTime() : 0;
+    return bLast - aLast;
+  })[0] || null;
+
+  const byYear = new Map();
+  sales.forEach(s => {
+    if(!s.sale_date) return;
+    const y = new Date(s.sale_date).getFullYear();
+    if(isNaN(y) || y < 2010) return;
+    byYear.set(y, (byYear.get(y) || 0) + 1);
+  });
+  const yearKeys = [...byYear.keys()].sort((a,b)=>a-b);
+  const yearData = yearKeys.map(y => ({ year: y, count: byYear.get(y) }));
+
+  const heroBg = MARKET.heroImage
+    ? `<div class="bgimg" style="background-image:url('${esc(MARKET.heroImage)}')" role="img" aria-label="${esc(MARKET.name)} aerial"></div><div class="overlay"></div>`
+    : '';
+  const heroClass = MARKET.heroImage ? 'hero' : 'hero no-image';
+
+  render(`
+    <section class="${heroClass}">
+      ${heroBg}
+      <div class="content">
+        <div class="inner">
+          <p class="eyebrow">· ${esc(MARKET.heroEyebrow || 'Live')} ·</p>
+          <h1>Every ${esc(MARKET.name)} condo, <em>indexed and analyzed.</em></h1>
+          <p class="sub">Built by an independent broker, for buyers and homeowners who want clarity. No MLS gatekeeping, no algorithmic black boxes — just every condo in every building, every sale, every comp.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="stat-strip">
+      <div class="container">
+        <div class="grid">
+          <div class="stat"><span class="label">Live buildings</span><span class="value">${fmt.num(totalBuildings)}</span><span class="meta">across ${(MARKET.cities||[]).filter(c => buildings.some(b => b.city_slug === c.slug)).length || 1} ${(buildings.length > 0 ? 'city' : 'cities')}</span></div>
+          <div class="stat"><span class="label">Units tracked</span><span class="value">${fmt.num(totalUnits)}</span><span class="meta">individual condos</span></div>
+          <div class="stat"><span class="label">Sales recorded</span><span class="value">${fmt.num(totalSales)}</span><span class="meta">historical comps</span></div>
+          <div class="stat"><span class="label">Last 24 months</span><span class="value">${fmt.num(recent24Count)}</span><span class="meta">recent transactions</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2>Find a <em>building</em>.</h2>
+            <p class="lead">Type a name, neighborhood, or city to filter the map. Click any pin for full sale history.</p>
+          </div>
+          <div class="search-bar" id="map-search-bar">
+            <span class="icon">⌕</span>
+            <input id="map-search" type="search" placeholder="Search by name, neighborhood…" autocomplete="off">
+            <button class="clear" id="map-search-clear" type="button" aria-label="Clear">×</button>
+            <span class="result-count" id="map-count">${fmt.num(buildings.length)} buildings</span>
+          </div>
+        </div>
+        <div class="map-wrap" id="home-map-wrap"></div>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2>All <em>buildings</em>.</h2>
+            <p class="lead">Sortable index. Click any row to open full detail — sale history, owners, claim-my-unit.</p>
+          </div>
+          <div class="search-bar" id="menu-search-bar">
+            <span class="icon">⌕</span>
+            <input id="menu-search" type="search" placeholder="Filter list…" autocomplete="off">
+            <button class="clear" id="menu-search-clear" type="button" aria-label="Clear">×</button>
+            <span class="result-count" id="menu-count">${fmt.num(buildings.length)} rows</span>
+          </div>
+        </div>
+        <table class="menu" id="building-menu">
+          <thead>
+            <tr>
+              <th class="sortable" data-sort="name">Building</th>
+              <th class="sortable hide-sm" data-sort="city">City</th>
+              <th class="sortable num" data-sort="units">Units</th>
+              <th class="sortable num hide-md" data-sort="year">Year</th>
+              <th class="sortable num hide-sm" data-sort="sales">Sales</th>
+              <th class="sortable num" data-sort="median">Median</th>
+              <th class="sortable hide-md" data-sort="last">Last sale</th>
+            </tr>
+          </thead>
+          <tbody id="menu-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="page">
+      <div class="container">
+        <div class="intel-teaser">
+          <div class="left">
+            <p class="eyebrow">Market</p>
+            <h2>The <em>intelligence</em> behind every comp.</h2>
+            <p class="lead">Every recorded sale, every building. Median prices from county recorder data — not algorithmic estimates, not MLS averages weighted by what's listed.</p>
+            <a href="#/intelligence" class="btn primary">Full intelligence report <span class="arrow">→</span></a>
+          </div>
+          <div class="right">
+            <div class="intel-mini-grid">
+              <div class="intel-mini">
+                <span class="label">Median (24mo)</span>
+                <span class="value">${medianRecent ? fmt.money(medianRecent) : '—'}</span>
+                <span class="meta">across ${fmt.num(recent24Count)} sales</span>
+              </div>
+              <div class="intel-mini">
+                <span class="label">Sales (24mo)</span>
+                <span class="value">${fmt.num(recent24Count)}</span>
+                <span class="meta">recorded transactions</span>
+              </div>
+              <div class="intel-mini">
+                <span class="label">Hottest building</span>
+                <span class="value" style="font-size:1.1rem;font-style:normal;font-family:var(--serif);line-height:1.15">${hottest ? esc(hottest.name) : '—'}</span>
+                <span class="meta">${hottest && hottest.last_sale ? 'last sale ' + fmt.ym(hottest.last_sale.sale_date) : ''}</span>
+              </div>
+            </div>
+            <div class="sparkline">
+              <div class="header"><span>Sales · year</span><span>${yearData.length > 0 ? yearData[0].year + '–' + yearData[yearData.length-1].year : '—'}</span></div>
+              ${renderSparkline(yearData)}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  `);
+
+  setTimeout(() => initHomeMap(buildings), 30);
+  setTimeout(() => renderBuildingMenu(), 0);
+  wireMapSearch();
+  wireMenuSearch();
+  wireMenuSort();
+}
+
+function renderSparkline(data){
+  if(!Array.isArray(data) || data.length === 0){
+    return '<svg viewBox="0 0 400 60" preserveAspectRatio="none"></svg>';
+  }
+  const W = 400, H = 60, pad = 4;
+  const max = Math.max(...data.map(d => d.count), 1);
+  const step = (W - pad*2) / Math.max(data.length - 1, 1);
+  const points = data.map((d, i) => {
+    const x = pad + step * i;
+    const y = H - pad - ((H - pad*2) * d.count / max);
+    return [x, y];
+  });
+  const path = points.map((p,i) => (i===0?'M':'L') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+  const fillPath = path + ` L ${(W-pad).toFixed(1)} ${H-pad} L ${pad} ${H-pad} Z`;
+  const dots = points.map((p,i) => i === points.length-1 ? `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.5" fill="#d4a574"/>` : '').join('');
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-label="Sales by year sparkline"><path d="${fillPath}" fill="rgba(212,165,116,0.12)"/><path d="${path}" fill="none" stroke="#d4a574" stroke-width="1.5"/>${dots}</svg>`;
+}
+
+function initHomeMap(buildings){
+  const el = document.getElementById('home-map-wrap');
+  if(!el || typeof L === 'undefined') return;
+  el.innerHTML = '';
+  const map = L.map(el, { zoomControl: true, scrollWheelZoom: false, attributionControl: true }).setView(MARKET.centroid, MARKET.zoom);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: 'abcd',
+    maxZoom: 19
+  }).addTo(map);
+  _state.homeMap = map;
+  _state.homeMarkers = new Map();
+
+  const valid = buildings.filter(b => b.centroid);
+  if(valid.length === 0) return;
+
+  valid.forEach(b => {
+    const icon = L.divIcon({
+      className: 'cm-pin',
+      html: `<div style="width:14px;height:14px;border-radius:50%;background:#d4a574;border:2px solid #0f131d;box-shadow:0 0 0 1.5px #d4a574;transition:opacity .15s ease"></div>`,
+      iconSize: [14, 14],
+      iconAnchor: [7, 7]
+    });
+    const m = L.marker(b.centroid, { icon, riseOnHover: true });
+    const popHtml = `<div class="map-pop">
+      <div class="name">${esc(b.name)}</div>
+      <div class="meta">${b.units ? fmt.num(b.units) + ' units' : ''}${b.units && b.neighborhood ? ' · ' : ''}${esc(b.neighborhood || '')}</div>
+      <a class="cta" href="#/building/${esc(b.slug)}">View building →</a>
+    </div>`;
+    m.bindPopup(popHtml, { closeButton: true, autoPan: true });
+    m.addTo(map);
+    _state.homeMarkers.set(b.slug, m);
+  });
+
+  const bounds = L.latLngBounds(valid.map(b => b.centroid));
+  map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+}
+
+function filterMap(query){
+  const q = String(query || '').toLowerCase().trim();
+  const map = _state.homeMap;
+  if(!map) return;
+  const matches = [];
+  _state.homeBuildings.forEach(b => {
+    const m = _state.homeMarkers.get(b.slug);
+    if(!m) return;
+    const haystack = (b.name + ' ' + b.neighborhood + ' ' + b.city_name).toLowerCase();
+    const hit = q === '' || haystack.indexOf(q) >= 0;
+    const el = m.getElement();
+    if(el){
+      const inner = el.querySelector('div');
+      if(inner) inner.style.opacity = hit ? '1' : '0.15';
+    }
+    if(hit) matches.push(b);
+  });
+  const cnt = document.getElementById('map-count');
+  if(cnt) cnt.textContent = fmt.num(matches.length) + ' ' + (matches.length === 1 ? 'building' : 'buildings');
+  if(q && matches.length > 0 && matches.length <= 5){
+    const valid = matches.filter(b => b.centroid);
+    if(valid.length > 0){
+      map.fitBounds(L.latLngBounds(valid.map(b => b.centroid)), { padding: [60, 60], maxZoom: 17, animate: true });
+    }
+  } else if(q === ''){
+    const valid = _state.homeBuildings.filter(b => b.centroid);
+    if(valid.length > 0) map.fitBounds(L.latLngBounds(valid.map(b => b.centroid)), { padding: [50, 50], maxZoom: 15, animate: true });
+  }
+}
+
+function wireMapSearch(){
+  const input = document.getElementById('map-search');
+  const bar = document.getElementById('map-search-bar');
+  const clr = document.getElementById('map-search-clear');
+  if(!input || !bar || !clr) return;
+  let t;
+  input.addEventListener('input', () => {
+    bar.classList.toggle('has-value', input.value.length > 0);
+    clearTimeout(t);
+    t = setTimeout(() => filterMap(input.value), 80);
+  });
+  clr.addEventListener('click', () => { input.value = ''; bar.classList.remove('has-value'); filterMap(''); input.focus(); });
+}
+
+function renderBuildingMenu(){
+  const body = document.getElementById('menu-body');
+  if(!body) return;
+  const search = (document.getElementById('menu-search')?.value || '').toLowerCase().trim();
+  const filtered = _state.homeBuildings.filter(b => {
+    if(!search) return true;
+    return (b.name + ' ' + b.neighborhood + ' ' + b.city_name).toLowerCase().indexOf(search) >= 0;
+  });
+  const sortKey = _state.homeMenuSort.key;
+  const dir = _state.homeMenuSort.dir === 'asc' ? 1 : -1;
+  const accessors = {
+    name: b => (b.name || '').toLowerCase(),
+    city: b => (b.city_name || '').toLowerCase(),
+    units: b => b.units || 0,
+    year: b => b.year_built || 0,
+    sales: b => b.sales_count || 0,
+    median: b => b.median || 0,
+    last: b => b.last_sale ? new Date(b.last_sale.sale_date || 0).getTime() : 0
+  };
+  const acc = accessors[sortKey] || accessors.units;
+  filtered.sort((a,b) => {
+    const va = acc(a), vb = acc(b);
+    if(va < vb) return -1 * dir;
+    if(va > vb) return 1 * dir;
+    return 0;
+  });
+
+  const cnt = document.getElementById('menu-count');
+  if(cnt) cnt.textContent = fmt.num(filtered.length) + ' ' + (filtered.length === 1 ? 'row' : 'rows');
+
+  document.querySelectorAll('#building-menu thead th').forEach(th => {
+    th.classList.remove('sort-asc','sort-desc');
+    if(th.getAttribute('data-sort') === sortKey){
+      th.classList.add(_state.homeMenuSort.dir === 'asc' ? 'sort-asc' : 'sort-desc');
+    }
+  });
+
+  if(filtered.length === 0){
+    body.innerHTML = '<tr class="empty-row"><td colspan="7">No buildings match.</td></tr>';
+    return;
+  }
+
+  body.innerHTML = filtered.map(b => `<tr data-slug="${esc(b.slug)}">
+    <td class="name">${esc(b.name)}</td>
+    <td class="muted hide-sm">${esc(b.city_name)}</td>
+    <td class="num">${fmt.num(b.units)}</td>
+    <td class="num muted hide-md">${b.year_built || '—'}</td>
+    <td class="num muted hide-sm">${fmt.num(b.sales_count)}</td>
+    <td class="num">${b.median ? fmt.money(b.median) : '—'}</td>
+    <td class="muted hide-md">${b.last_sale ? fmt.ym(b.last_sale.sale_date) : '—'}</td>
+  </tr>`).join('');
+
+  body.querySelectorAll('tr[data-slug]').forEach(tr => {
+    tr.addEventListener('click', () => {
+      const slug = tr.getAttribute('data-slug');
+      if(slug) window.location.hash = '#/building/' + slug;
+    });
+  });
+}
+
+function wireMenuSearch(){
+  const input = document.getElementById('menu-search');
+  const bar = document.getElementById('menu-search-bar');
+  const clr = document.getElementById('menu-search-clear');
+  if(!input || !bar || !clr) return;
+  let t;
+  input.addEventListener('input', () => {
+    bar.classList.toggle('has-value', input.value.length > 0);
+    clearTimeout(t);
+    t = setTimeout(renderBuildingMenu, 80);
+  });
+  clr.addEventListener('click', () => { input.value = ''; bar.classList.remove('has-value'); renderBuildingMenu(); input.focus(); });
+}
+
+function wireMenuSort(){
+  document.querySelectorAll('#building-menu thead th[data-sort]').forEach(th => {
+    th.addEventListener('click', () => {
+      const k = th.getAttribute('data-sort');
+      if(_state.homeMenuSort.key === k){
+        _state.homeMenuSort.dir = _state.homeMenuSort.dir === 'asc' ? 'desc' : 'asc';
+      } else {
+        _state.homeMenuSort.key = k;
+        _state.homeMenuSort.dir = (k === 'name' || k === 'city') ? 'asc' : 'desc';
+      }
+      renderBuildingMenu();
+    });
+  });
+}
+
+async function renderCity(slug){
+  loading();
+  updateNav('/city/' + slug);
+
+  const bldRes = await fetchRest('/v_buildings_with_market?market_slug=eq.' + encodeURIComponent(MARKET.slug) + '&city_slug=eq.' + encodeURIComponent(slug) + '&is_catalogued=eq.true&select=building_slug,display_name,unit_count,year_built,neighborhood,city_display_name&order=unit_count.desc.nullslast');
+
+  if(bldRes.error){ render(errorBlock(bldRes.error)); return; }
+  const buildings = Array.isArray(bldRes.data) ? bldRes.data : [];
+  const knownCity = (MARKET.cities || []).find(c => c.slug === slug);
+  const cityName = (buildings.length > 0 && buildings[0].city_display_name) || (knownCity && knownCity.name) || slug.split('-').map(w => w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
+  const totalUnits = buildings.reduce((s, b) => s + Number(b.unit_count || 0), 0);
+
+  if(buildings.length === 0){
+    render(`<div class="container">
+      <p class="crumbs"><a href="#/">← Back to home</a></p>
+      <section style="padding:2rem 0 1rem">
+        <p class="eyebrow">${esc(MARKET.name)} Condo Market · Live</p>
+        <h1 style="font-family:var(--serif);font-size:clamp(2.4rem,5vw,4rem);font-weight:400;line-height:1.05;margin:1rem 0 1.2rem;letter-spacing:-.02em">${esc(cityName)}<em style="color:var(--gold);font-style:italic">.</em></h1>
+        <p style="color:var(--cream-dim);max-width:60ch">0 buildings catalogued in ${esc(cityName)}. Every unit, owner, and sale comp will be here when the catalog lands.</p>
+      </section>
+      <section style="padding-bottom:2rem"><div class="alert empty"><strong style="font-family:var(--serif);font-style:italic;font-size:1.3rem">Catalog in progress</strong><br><br>We haven't published ${esc(cityName)} buildings yet. Check back soon — or email <a href="mailto:${esc(CFG.CONTACT_EMAIL)}?subject=${encodeURIComponent('Notify when ' + cityName + ' launches')}">${esc(CFG.CONTACT_EMAIL)}</a> to be notified.</div></section>
+    </div>`);
+    return;
+  }
+
+  const cards = buildings.map(b => {
+    const meta = [];
+    if(b.unit_count) meta.push(`<span>${fmt.num(b.unit_count)} units</span>`);
+    if(b.year_built) meta.push(`<span>Built ${esc(String(b.year_built))}</span>`);
+    if(b.neighborhood) meta.push(`<span>${esc(b.neighborhood)}</span>`);
+    return `<a href="#/building/${esc(b.building_slug)}" class="card">
+      <h3>${esc(b.display_name || b.building_slug)}</h3>
+      <div class="meta">${meta.join('')}</div>
+      <div class="desc">Every recorded sale, current owners, and unit-level detail.</div>
+      <div class="cta">View building →</div>
+    </a>`;
+  }).join('');
+
+  render(`<div class="container">
+    <p class="crumbs"><a href="#/">Home</a><span class="sep">·</span>${esc(cityName)}</p>
+    <section style="padding:1.5rem 0 2.5rem">
+      <p class="eyebrow">${esc(MARKET.name)} Condo Market · Live</p>
+      <h1 style="font-family:var(--serif);font-size:clamp(2.4rem,5vw,4rem);font-weight:400;line-height:1.05;margin:1rem 0 1.2rem;letter-spacing:-.02em">${esc(cityName)}<em style="color:var(--gold);font-style:italic">.</em></h1>
+      <p style="color:var(--cream-dim);max-width:60ch">${buildings.length} ${buildings.length===1?'building':'buildings'} catalogued in ${esc(cityName)} · ${fmt.num(totalUnits)} units · every recent sale comp indexed.</p>
+    </section>
+    <section style="padding-bottom:2rem"><div class="card-grid">${cards}</div></section>
+  </div>`);
+}
+
+async function renderBuilding(slug){
+  loading();
+  updateNav('/building/' + slug);
+
+  const [bldRes, salesRes, propsRes] = await Promise.all([
+    fetchRest('/v_buildings_with_market?building_slug=eq.' + encodeURIComponent(slug) + '&select=building_slug,display_name,unit_count,year_built,neighborhood,city_slug,city_display_name,canonical_address,tagline,description,hero_image_url,is_catalogued,market_slug&limit=1'),
+    fetchRest('/building_sales?building_slug=eq.' + encodeURIComponent(slug) + '&select=sale_date,sale_price,unit_address,unit_label,beds,baths_total,sqft,year_built&order=sale_date.desc.nullslast,sale_price.desc.nullslast&limit=200'),
+    fetchRest('/properties?building_slug=eq.' + encodeURIComponent(slug) + '&select=lat,lng,property_address,unit_number,bedrooms,baths,last_sale_date,last_sale_price&order=unit_number.asc.nullslast&limit=1000')
+  ]);
+
+  if(bldRes.error){ render(errorBlock(bldRes.error)); return; }
+  const list = Array.isArray(bldRes.data) ? bldRes.data : [];
+  if(list.length === 0){
+    render(`<div class="container"><p class="crumbs"><a href="#/">← Back to home</a></p><section style="padding:2rem 0"><h1 style="font-family:var(--serif);font-style:italic;font-weight:400;font-size:3rem">Not found</h1><p style="color:var(--cream-dim)">That building isn't catalogued yet. <a href="#/">Back to home</a> or email <a href="mailto:${esc(CFG.CONTACT_EMAIL)}">${esc(CFG.CONTACT_EMAIL)}</a> to request it.</p></section></div>`);
+    return;
+  }
+  const b = list[0];
+  const sales = Array.isArray(salesRes.data) ? salesRes.data : [];
+  const props = Array.isArray(propsRes.data) ? propsRes.data : [];
+  const knownCity = (MARKET.cities || []).find(c => c.slug === b.city_slug);
+  const cityName = b.city_display_name || (knownCity && knownCity.name) || '';
+  const validSales = sales.filter(s => s && s.sale_price != null && Number(s.sale_price) > 0);
+  const medianPrice = median(validSales.map(s => Number(s.sale_price)));
+  const latestSale = validSales.length > 0 ? validSales[0] : null;
+  const coords = props.filter(p => p.lat != null && p.lng != null).map(p => [Number(p.lat), Number(p.lng)]);
+
+  const metaItems = [];
+  if(b.unit_count) metaItems.push(`<span>${fmt.num(b.unit_count)} units</span>`);
+  if(b.year_built) metaItems.push(`<span>Built ${esc(String(b.year_built))}</span>`);
+  if(b.neighborhood) metaItems.push(`<span>${esc(b.neighborhood)}</span>`);
+  if(cityName) metaItems.push(`<span>${esc(cityName)}</span>`);
+
+  const recent = validSales.slice(0, 15);
+  const recentRows = recent.length > 0 ? recent.map(s => {
+    const addr = s.unit_address || s.unit_label || '—';
+    const bedbath = [s.beds ? s.beds + ' bd' : null, s.baths_total ? Number(s.baths_total) + ' ba' : null].filter(Boolean).join(' · ') || '—';
+    return `<tr><td class="muted">${esc(fmt.date(s.sale_date))}</td><td>${esc(addr)}</td><td class="hide-sm muted">${esc(bedbath)}</td><td class="hide-sm num muted">${s.sqft ? fmt.num(s.sqft) + ' sf' : '—'}</td><td class="num">${fmt.moneyFull(s.sale_price)}</td></tr>`;
+  }).join('') : `<tr><td colspan="5" class="muted" style="text-align:center;padding:1.5rem">No recorded sales comps yet for this building.</td></tr>`;
+
+  const subject = encodeURIComponent('Claim my unit at ' + (b.display_name || slug));
+  const cmaSubject = encodeURIComponent('CMA request — ' + (b.display_name || slug));
+  const cmaBody = encodeURIComponent('Hi Tim,\n\nI own a unit at ' + (b.display_name || slug) + '. Could you send me a comparative market analysis?\n\nUnit number:\nName:\n\nThanks');
+
+  render(`<div class="container">
+    <p class="crumbs"><a href="#/">Home</a><span class="sep">·</span>${cityName ? `<a href="#/city/${esc(b.city_slug)}">${esc(cityName)}</a><span class="sep">·</span>` : ''}${esc(b.display_name || slug)}</p>
+    <section class="building-hero">
+      <div class="info">
+        <p class="eyebrow">${cityName ? esc(cityName) + ' · ' : ''}Building Detail</p>
+        <h1>${esc(b.display_name || slug)}</h1>
+        <div class="meta">${metaItems.join('')}</div>
+        ${b.tagline ? `<p style="color:var(--cream-dim);font-size:1rem;max-width:50ch">${esc(b.tagline)}</p>` : ''}
+      </div>
+      <div class="map" id="building-map"><div class="map-fallback">Loading map…</div></div>
+    </section>
+    <div class="stats-row">
+      <div class="stat"><span class="label">Median sale</span><span class="value">${medianPrice ? fmt.money(medianPrice) : '—'}</span><span class="meta">across ${validSales.length} comps</span></div>
+      <div class="stat"><span class="label">Latest sale</span><span class="value">${latestSale ? fmt.money(latestSale.sale_price) : '—'}</span><span class="meta">${latestSale ? fmt.ym(latestSale.sale_date) : 'No recorded sale'}</span></div>
+      <div class="stat"><span class="label">Sales tracked</span><span class="value">${fmt.num(validSales.length)}</span><span class="meta">complete sale history</span></div>
+      <div class="stat"><span class="label">Units indexed</span><span class="value">${fmt.num(props.length || b.unit_count || 0)}</span><span class="meta">individual condos tracked</span></div>
+    </div>
+    <section class="panel">
+      <h2>Recent sale comps</h2>
+      <p class="sub">Last ${Math.min(recent.length, 15)} recorded sales at this building. Source: county recorder data. Updated continuously.</p>
+      <table class="sales">
+        <thead><tr><th>Date</th><th>Unit</th><th class="hide-sm">Beds / baths</th><th class="hide-sm" style="text-align:right">Size</th><th style="text-align:right">Price</th></tr></thead>
+        <tbody>${recentRows}</tbody>
+      </table>
+    </section>
+    <section class="panel">
+      <h2>Do you own at ${esc(b.display_name || slug)}?</h2>
+      <p class="sub">Two ways I help current owners:</p>
+      <div class="cta-row">
+        <a class="btn primary" href="mailto:${esc(CFG.CONTACT_EMAIL)}?subject=${subject}">Claim my unit</a>
+        <a class="btn" href="mailto:${esc(CFG.CONTACT_EMAIL)}?subject=${cmaSubject}&body=${cmaBody}">Request a CMA</a>
+      </div>
+      <p style="color:var(--cream-dim);font-size:.9rem;margin-top:1rem;line-height:1.65"><strong style="color:var(--cream);font-weight:500">Claim my unit</strong> sets up a private dashboard for your specific unit — track equity, set a Make-Me-Move price, see when comparable units sell. Free.<br><br><strong style="color:var(--cream);font-weight:500">Request a CMA</strong> gets you a written valuation for your unit, no obligation, usually within 48 hours.</p>
+    </section>
+  </div>`);
+
+  setTimeout(() => initBuildingMap(coords, b.display_name || slug), 50);
+}
+
+function initBuildingMap(coords, label){
+  const el = document.getElementById('building-map');
+  if(!el || typeof L === 'undefined'){ if(el) el.innerHTML = '<div class="map-fallback">Map library unavailable</div>'; return; }
+  let center, zoom;
+  if(Array.isArray(coords) && coords.length > 0){
+    const lats = coords.map(c => c[0]);
+    const lngs = coords.map(c => c[1]);
+    center = [(Math.min(...lats) + Math.max(...lats)) / 2, (Math.min(...lngs) + Math.max(...lngs)) / 2];
+    zoom = 17;
+  } else { center = MARKET.centroid; zoom = MARKET.zoom; }
+  el.innerHTML = '';
+  try {
+    const map = L.map(el, { zoomControl: true, scrollWheelZoom: false }).setView(center, zoom);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>', subdomains: 'abcd', maxZoom: 19 }).addTo(map);
+    const icon = L.divIcon({ className: '', html: '<div style="width:14px;height:14px;border-radius:50%;background:#d4a574;border:2px solid #0f131d;box-shadow:0 0 0 1.5px #d4a574"></div>', iconSize: [14,14], iconAnchor: [7,7] });
+    if(Array.isArray(coords) && coords.length > 0){
+      coords.forEach(c => L.marker(c, { icon }).addTo(map));
+      if(coords.length > 1) map.fitBounds(L.latLngBounds(coords), { padding: [40,40], maxZoom: 18 });
+    } else { L.marker(center, { icon }).bindTooltip(label || 'Building').addTo(map); }
+  } catch (e) { el.innerHTML = '<div class="map-fallback">Map could not load</div>'; }
+}
+
+async function renderIntelligence(){
+  loading();
+  updateNav('/intelligence');
+
+  const [bldRes, salesRes] = await Promise.all([
+    fetchRest('/v_buildings_with_market?market_slug=eq.' + encodeURIComponent(MARKET.slug) + '&is_catalogued=eq.true&select=building_slug,display_name,unit_count,year_built,city_slug,city_display_name'),
+    fetchRest('/building_sales?select=building_slug,sale_date,sale_price&order=sale_date.desc.nullslast&limit=20000')
+  ]);
+
+  if(bldRes.error){ render(errorBlock(bldRes.error)); return; }
+  const buildings = Array.isArray(bldRes.data) ? bldRes.data : [];
+  const slugSet = new Set(buildings.map(b => b.building_slug).filter(Boolean));
+  const sales = (Array.isArray(salesRes.data) ? salesRes.data : []).filter(s => slugSet.has(s.building_slug) && s.sale_price != null && Number(s.sale_price) > 0);
+
+  const totalSales = sales.length;
+  const medianAll = median(sales.map(s => Number(s.sale_price)));
+  const totalVolume = sales.reduce((a, s) => a + Number(s.sale_price || 0), 0);
+  const cutoff = new Date(); cutoff.setMonth(cutoff.getMonth() - 24);
+  const recent = sales.filter(s => s.sale_date && new Date(s.sale_date) >= cutoff);
+  const recentMedian = median(recent.map(s => Number(s.sale_price)));
+
+  const byYear = new Map();
+  sales.forEach(s => {
+    if(!s.sale_date) return;
+    const y = new Date(s.sale_date).getFullYear();
+    if(isNaN(y) || y < 2010) return;
+    if(!byYear.has(y)) byYear.set(y, []);
+    byYear.get(y).push(Number(s.sale_price));
+  });
+  const yrs = [...byYear.keys()].sort((a,b)=>a-b);
+  const yearData = yrs.map(y => ({ year: y, count: byYear.get(y).length, median: median(byYear.get(y)) }));
+
+  const bySlug = new Map();
+  sales.forEach(s => { if(!bySlug.has(s.building_slug)) bySlug.set(s.building_slug, []); bySlug.get(s.building_slug).push(s); });
+  const stats = buildings.map(b => {
+    const list = bySlug.get(b.building_slug) || [];
+    const r = list.filter(s => s.sale_date && new Date(s.sale_date) >= cutoff);
+    return {
+      slug: b.building_slug,
+      name: b.display_name || b.building_slug,
+      city: b.city_display_name || '',
+      units: Number(b.unit_count || 0),
+      total: list.length,
+      recent: r.length,
+      median: median(list.map(s => Number(s.sale_price))),
+      latest: list.length > 0 ? list.slice().sort((a,b)=>new Date(b.sale_date||0)-new Date(a.sale_date||0))[0] : null
+    };
+  });
+  const hottest = stats.slice().sort((a,b) => b.recent - a.recent || ((b.latest?.sale_date||'') > (a.latest?.sale_date||'') ? -1 : 1)).slice(0,5);
+  const priciest = stats.filter(s => s.median != null).slice().sort((a,b) => (b.median||0) - (a.median||0)).slice(0,5);
+  const allRows = stats.slice().sort((a,b) => (b.median||0) - (a.median||0));
+
+  const chartSvg = renderYearChart(yearData);
+  const rowFor = s => `<tr><td><a href="#/building/${esc(s.slug)}" style="color:var(--cream);border-bottom:none">${esc(s.name)}</a></td><td class="hide-sm muted">${esc(s.city)}</td><td class="num">${fmt.num(s.recent)}</td><td class="num muted">${fmt.num(s.total)}</td><td class="num">${s.median ? fmt.money(s.median) : '—'}</td></tr>`;
+  const priceRow = s => `<tr><td><a href="#/building/${esc(s.slug)}" style="color:var(--cream);border-bottom:none">${esc(s.name)}</a></td><td class="hide-sm muted">${esc(s.city)}</td><td class="num">${fmt.money(s.median)}</td><td class="num muted">${fmt.num(s.total)}</td><td class="num muted">${s.latest ? fmt.ym(s.latest.sale_date) : '—'}</td></tr>`;
+  const allRow = s => `<tr><td><a href="#/building/${esc(s.slug)}" style="color:var(--cream);border-bottom:none">${esc(s.name)}</a></td><td class="hide-sm muted">${esc(s.city)}</td><td class="num muted">${fmt.num(s.units)}</td><td class="num">${fmt.num(s.total)}</td><td class="num">${s.median ? fmt.money(s.median) : '—'}</td><td class="num muted">${s.latest ? fmt.ym(s.latest.sale_date) : '—'}</td></tr>`;
+
+  render(`<div class="container">
+    <p class="crumbs"><a href="#/">Home</a><span class="sep">·</span>Market Intelligence</p>
+    <section style="padding:1.5rem 0 2rem">
+      <p class="eyebrow">${esc(MARKET.name)} · Aggregate Market</p>
+      <h1 style="font-family:var(--serif);font-size:clamp(2.2rem,4.6vw,3.6rem);font-weight:400;line-height:1.05;margin:1rem 0 1.2rem;letter-spacing:-.015em">Market <em style="color:var(--gold);font-style:italic">intelligence.</em></h1>
+      <p style="color:var(--cream-dim);max-width:60ch">Every recorded sale, every building. No averages weighted by listings — actual median sale prices from county recorder data across ${buildings.length} buildings.</p>
+    </section>
+    <section style="padding-bottom:2rem">
+      <div class="intel-grid">
+        <div class="stats-row" style="grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin:0">
+          <div class="stat"><span class="label">Median (all-time)</span><span class="value">${medianAll ? fmt.money(medianAll) : '—'}</span><span class="meta">${fmt.num(totalSales)} comps</span></div>
+          <div class="stat"><span class="label">Median (24 mo)</span><span class="value">${recentMedian ? fmt.money(recentMedian) : '—'}</span><span class="meta">${fmt.num(recent.length)} recent sales</span></div>
+          <div class="stat"><span class="label">Volume tracked</span><span class="value">${fmt.money(totalVolume)}</span><span class="meta">total since 2010</span></div>
+          <div class="stat"><span class="label">Buildings covered</span><span class="value">${fmt.num(buildings.length)}</span><span class="meta">100% catalogue coverage</span></div>
+        </div>
+      </div>
+    </section>
+    <section class="chart-wrap">
+      <h2 style="font-family:var(--serif);font-size:1.5rem;font-weight:400;margin-bottom:.3rem">Sales by year</h2>
+      <p style="color:var(--cream-dim);font-size:.92rem;margin-bottom:1.3rem">Recorded sales volume, 2010 → present. Bar height = number of recorded sales.</p>
+      ${chartSvg}
+    </section>
+    <section class="panel">
+      <h2>Hottest buildings (last 24 months)</h2>
+      <p class="sub">Buildings with the most recorded sales activity in the trailing two years.</p>
+      <table class="sales"><thead><tr><th>Building</th><th class="hide-sm">City</th><th style="text-align:right">Sales · 24mo</th><th class="hide-sm" style="text-align:right">All-time</th><th style="text-align:right">Median</th></tr></thead><tbody>${hottest.length > 0 ? hottest.map(rowFor).join('') : '<tr><td colspan="5" class="muted" style="text-align:center">No data</td></tr>'}</tbody></table>
+    </section>
+    <section class="panel">
+      <h2>Highest median sale price</h2>
+      <p class="sub">Buildings ranked by median recorded sale price across full history.</p>
+      <table class="sales"><thead><tr><th>Building</th><th class="hide-sm">City</th><th style="text-align:right">Median</th><th class="hide-sm" style="text-align:right">Sales</th><th style="text-align:right">Last sale</th></tr></thead><tbody>${priciest.length > 0 ? priciest.map(priceRow).join('') : '<tr><td colspan="5" class="muted" style="text-align:center">No data</td></tr>'}</tbody></table>
+    </section>
+    <section class="panel" style="margin-bottom:2rem">
+      <h2>All buildings</h2>
+      <p class="sub">Complete index. Click any building for full sale history and unit-level detail.</p>
+      <table class="sales"><thead><tr><th>Building</th><th class="hide-sm">City</th><th class="hide-sm" style="text-align:right">Units</th><th style="text-align:right">Sales</th><th style="text-align:right">Median</th><th class="hide-sm" style="text-align:right">Last sale</th></tr></thead><tbody>${allRows.map(allRow).join('')}</tbody></table>
+    </section>
+  </div>`);
+}
+
+function renderYearChart(data){
+  if(!Array.isArray(data) || data.length === 0){
+    return '<p style="color:var(--cream-faint);font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:2rem">No sales data</p>';
+  }
+  const W = 900, H = 280, pad = { t: 20, r: 30, b: 40, l: 50 };
+  const innerW = W - pad.l - pad.r;
+  const innerH = H - pad.t - pad.b;
+  const maxCount = Math.max(...data.map(d => d.count), 1);
+  const barW = innerW / data.length * 0.7;
+  const step = innerW / data.length;
+  const yTicks = 4;
+  const yLines = [];
+  for(let i = 0; i <= yTicks; i++){
+    const y = pad.t + innerH - (innerH * i / yTicks);
+    const v = Math.round(maxCount * i / yTicks);
+    yLines.push(`<line x1="${pad.l}" y1="${y}" x2="${pad.l + innerW}" y2="${y}"></line><text x="${pad.l - 8}" y="${y + 3}" text-anchor="end">${v}</text>`);
+  }
+  const bars = data.map((d, i) => {
+    const x = pad.l + step * i + (step - barW) / 2;
+    const h = innerH * (d.count / maxCount);
+    const y = pad.t + innerH - h;
+    return `<rect class="bar" x="${x}" y="${y}" width="${barW}" height="${h}" rx="2"><title>${d.year}: ${d.count} sales · median ${d.median ? fmt.money(d.median) : '—'}</title></rect><text x="${x + barW/2}" y="${pad.t + innerH + 18}" text-anchor="middle">${d.year}</text>`;
+  }).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Recorded condo sales by year"><g class="grid">${yLines.join('')}</g><g class="axis">${bars}</g></svg>`;
+}
+
+function renderNotFound(path){
+  updateNav('');
+  render(`<div class="container"><p class="crumbs"><a href="#/">← Back to home</a></p><section style="padding:2rem 0"><p class="eyebrow">404</p><h1 style="font-family:var(--serif);font-style:italic;font-weight:400;font-size:3rem">Not found</h1><p style="color:var(--cream-dim)">That page doesn't exist yet${path ? ` <span class="mono" style="color:var(--cream-faint)">(${esc(path)})</span>` : ''}. <a href="#/">Back to home</a>.</p></section></div>`);
+}
+
+async function route(){
+  const r = parseRoute();
+  try {
+    if(r.name === 'home') return await renderHome();
+    if(r.name === 'city') return await renderCity(r.slug);
+    if(r.name === 'building') return await renderBuilding(r.slug);
+    if(r.name === 'intelligence') return await renderIntelligence();
+    return renderNotFound(r.path);
+  } catch (e) {
+    console.error('route error:', e);
+    render(errorBlock((e && e.message) || 'unexpected error'));
+  }
+}
+
+applyHeader();
+window.addEventListener('hashchange', route);
+window.addEventListener('DOMContentLoaded', route);
+if(document.readyState !== 'loading') route();
+
+})();
 </script>
 </body>
 </html>
