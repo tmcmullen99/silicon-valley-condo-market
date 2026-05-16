@@ -18,6 +18,7 @@ window.MARKET_BY_HOST = {
     centroid: [37.3300, -121.9500],
     zoom: 11,
     heroImage: 'https://www.kimley-horn.com/wp-content/uploads/2025/09/CA_San-Jose-2048x1304.jpeg',
+    // ALT hero image (saved 2026-05-16): Apple Park aerial — https://media.nbcbayarea.com/2019/09/apple_spaceship.jpg?quality=85&strip=all&resize=1200%2C675
     heroEyebrow: 'Live · Launched May 16, 2026',
     cities: [
       { slug: 'campbell',     name: 'Campbell'     },
@@ -187,14 +188,16 @@ table.menu .empty-row:hover td{background:transparent}
 .crumbs a:hover{color:var(--cream)}
 .crumbs .sep{margin:0 .55rem;opacity:.5}
 
-.building-hero{display:grid;grid-template-columns:1.1fr .9fr;gap:1.8rem;align-items:stretch;margin:.5rem 0 2.5rem}
+.building-hero{display:grid;grid-template-columns:1fr 1.15fr;gap:1.8rem;align-items:stretch;margin:.5rem 0 2.5rem}
 .building-hero .info{display:flex;flex-direction:column;gap:1rem;justify-content:center}
 .building-hero h1{font-family:var(--serif);font-size:clamp(2rem,4.4vw,3.4rem);font-weight:400;line-height:1.05;letter-spacing:-.015em}
 .building-hero .info .meta{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--cream-faint);display:flex;gap:1rem;flex-wrap:wrap}
-.building-hero .map{background:var(--navy-2);border:1px solid var(--line);border-radius:6px;min-height:340px;overflow:hidden;position:relative}
-.building-hero .map .leaflet-container{height:100%;width:100%;background:var(--navy-2);font-family:var(--sans)}
+.building-hero .satellite{background:var(--navy-2);border:1px solid var(--line);border-radius:6px;min-height:420px;overflow:hidden;position:relative}
+.building-hero .satellite .leaflet-container{height:100%;width:100%;background:var(--navy-2);font-family:var(--sans)}
+.building-hero .satellite .leaflet-control-attribution{background:rgba(15,19,29,0.7);color:rgba(232,227,216,0.5);font-size:9px}
+.building-hero .satellite .leaflet-control-attribution a{color:var(--cream-faint)}
 .map-fallback{display:flex;align-items:center;justify-content:center;height:100%;color:var(--cream-faint);font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
-@media (max-width:780px){.building-hero{grid-template-columns:1fr}.building-hero .map{min-height:260px;order:-1}}
+@media (max-width:780px){.building-hero{grid-template-columns:1fr}.building-hero .satellite{min-height:300px;order:-1}}
 
 .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:2.5rem}
 .stats-row .stat{background:var(--navy-2);border:1px solid var(--line);border-radius:6px;padding:1.15rem 1.3rem;display:flex;flex-direction:column;gap:.55rem;min-height:100px}
@@ -206,6 +209,24 @@ table.menu .empty-row:hover td{background:transparent}
 .panel + .panel{margin-top:1.4rem}
 .panel h2{font-family:var(--serif);font-size:1.5rem;font-weight:400;letter-spacing:-.005em;margin-bottom:.3rem}
 .panel .sub{color:var(--cream-dim);font-size:.92rem;margin-bottom:1.3rem}
+
+.panel-split{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;margin-bottom:1.4rem}
+@media (max-width:780px){.panel-split{grid-template-columns:1fr}}
+
+.unit-mix-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:.7rem;margin-top:.4rem}
+.unit-mix{background:var(--navy-3);border:1px solid var(--line);border-radius:5px;padding:.95rem .9rem;display:flex;flex-direction:column;gap:.35rem;min-height:96px}
+.unit-mix .label{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--cream-faint)}
+.unit-mix .value{font-family:var(--serif);font-size:1.55rem;font-weight:400;font-style:italic;color:var(--cream);line-height:1;letter-spacing:-.01em}
+.unit-mix .meta{font-size:.76rem;color:var(--cream-dim);margin-top:auto}
+
+.owner-rows{display:flex;flex-direction:column;margin-top:.2rem}
+.owner-row{display:grid;grid-template-columns:1fr 1fr auto;align-items:center;gap:1rem;padding:.95rem 0;border-bottom:1px solid var(--line)}
+.owner-row:last-child{border-bottom:none}
+.owner-row .ow-label{font-size:.95rem;color:var(--cream)}
+.owner-row .ow-bar{height:5px;background:var(--navy-3);border-radius:3px;overflow:hidden;max-width:180px;width:100%}
+.owner-row .ow-bar > span{display:block;height:100%;background:var(--gold);transition:width .3s ease}
+.owner-row .ow-pct{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--cream);min-width:54px;text-align:right;font-variant-numeric:tabular-nums}
+.owner-row .ow-detail{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--cream-faint);grid-column:1/-1;margin-top:-.45rem;padding-bottom:.3rem}
 
 table.sales{width:100%;border-collapse:collapse;font-size:.9rem}
 table.sales th{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--cream-faint);text-align:left;padding:.55rem .7rem;border-bottom:1px solid var(--line-strong);font-weight:500}
@@ -313,7 +334,8 @@ const fmt = {
   moneyFull(n){ if(n==null||isNaN(n)) return '—'; return '$'+Math.round(Number(n)).toLocaleString(); },
   date(s){ if(!s) return '—'; const d=new Date(s); if(isNaN(d.getTime())) return '—'; return d.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}); },
   ym(s){ if(!s) return '—'; const d=new Date(s); if(isNaN(d.getTime())) return '—'; return d.toLocaleDateString('en-US',{year:'numeric',month:'short'}); },
-  num(n){ if(n==null||isNaN(n)) return '—'; return Number(n).toLocaleString(); }
+  num(n){ if(n==null||isNaN(n)) return '—'; return Number(n).toLocaleString(); },
+  pct(num, den){ if(!den || den === 0) return '—'; return ((num/den)*100).toFixed(1).replace(/\.0$/,'') + '%'; }
 };
 
 const esc = (s) => String(s==null?'':s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
@@ -456,8 +478,6 @@ async function renderHome(){
   const recent24Count = recent24.length;
   const medianRecent = median(recent24.map(s => Number(s.sale_price)));
   const hottest = buildings.slice().sort((a,b) => {
-    const aRec = (a.sales_count === 0 || !a.last_sale) ? 0 : a.sales_count;
-    const bRec = (b.sales_count === 0 || !b.last_sale) ? 0 : b.sales_count;
     const aLast = a.last_sale ? new Date(a.last_sale.sale_date||0).getTime() : 0;
     const bLast = b.last_sale ? new Date(b.last_sale.sale_date||0).getTime() : 0;
     return bLast - aLast;
@@ -838,8 +858,8 @@ async function renderBuilding(slug){
 
   const [bldRes, salesRes, propsRes] = await Promise.all([
     fetchRest('/v_buildings_with_market?building_slug=eq.' + encodeURIComponent(slug) + '&select=building_slug,display_name,unit_count,year_built,neighborhood,city_slug,city_display_name,canonical_address,tagline,description,hero_image_url,is_catalogued,market_slug&limit=1'),
-    fetchRest('/building_sales?building_slug=eq.' + encodeURIComponent(slug) + '&select=sale_date,sale_price,unit_address,unit_label,beds,baths_total,sqft,year_built&order=sale_date.desc.nullslast,sale_price.desc.nullslast&limit=200'),
-    fetchRest('/properties?building_slug=eq.' + encodeURIComponent(slug) + '&select=lat,lng,property_address,unit_number,bedrooms,baths,last_sale_date,last_sale_price&order=unit_number.asc.nullslast&limit=1000')
+    fetchRest('/building_sales?building_slug=eq.' + encodeURIComponent(slug) + '&select=sale_date,sale_price,unit_address,unit_label,beds,baths_total,sqft,year_built&order=sale_date.desc.nullslast,sale_price.desc.nullslast&limit=500'),
+    fetchRest('/properties?building_slug=eq.' + encodeURIComponent(slug) + '&select=lat,lng,property_address,unit_number,bedrooms,baths,last_sale_date,last_sale_price,out_of_state_owner,is_corporate_owner&order=unit_number.asc.nullslast&limit=1000')
   ]);
 
   if(bldRes.error){ render(errorBlock(bldRes.error)); return; }
@@ -871,9 +891,67 @@ async function renderBuilding(slug){
     return `<tr><td class="muted">${esc(fmt.date(s.sale_date))}</td><td>${esc(addr)}</td><td class="hide-sm muted">${esc(bedbath)}</td><td class="hide-sm num muted">${s.sqft ? fmt.num(s.sqft) + ' sf' : '—'}</td><td class="num">${fmt.moneyFull(s.sale_price)}</td></tr>`;
   }).join('') : `<tr><td colspan="5" class="muted" style="text-align:center;padding:1.5rem">No recorded sales comps yet for this building.</td></tr>`;
 
+  const bedBuckets = new Map();
+  props.forEach(p => {
+    const key = p.bedrooms == null ? 'unknown' : Number(p.bedrooms);
+    if(!bedBuckets.has(key)) bedBuckets.set(key, []);
+    bedBuckets.get(key).push(p);
+  });
+  const bedKeys = [...bedBuckets.keys()].sort((a,b) => {
+    if(a === 'unknown') return 1;
+    if(b === 'unknown') return -1;
+    return Number(a) - Number(b);
+  });
+  const unitMixHtml = bedKeys.length > 0 ? bedKeys.map(k => {
+    const list = bedBuckets.get(k);
+    const label = k === 'unknown' ? 'Unknown' : (k === 0 ? 'Studio' : k + ' bed');
+    const baths = list.map(p => p.baths).filter(v => v != null && !isNaN(v)).map(Number);
+    const avgBath = baths.length > 0 ? (baths.reduce((a,c)=>a+c,0)/baths.length).toFixed(1) : null;
+    return `<div class="unit-mix">
+      <span class="label">${esc(label)}</span>
+      <span class="value">${fmt.num(list.length)}</span>
+      <span class="meta">${fmt.pct(list.length, props.length)}${avgBath ? ' · avg ' + avgBath + ' ba' : ''}</span>
+    </div>`;
+  }).join('') : '<p style="color:var(--cream-dim);font-size:.9rem">No unit-level data available.</p>';
+
+  const totalProps = props.length;
+  const outOfStateCount = props.filter(p => p.out_of_state_owner === true).length;
+  const corporateCount = props.filter(p => p.is_corporate_owner === true).length;
+  const sale5yCutoff = new Date(); sale5yCutoff.setFullYear(sale5yCutoff.getFullYear() - 5);
+  const tradedRecentCount = props.filter(p => p.last_sale_date && new Date(p.last_sale_date) >= sale5yCutoff).length;
+  const propsWithSaleDate = props.filter(p => p.last_sale_date).length;
+  const ownerRows = [
+    { label: 'Out-of-state owners', num: outOfStateCount, den: totalProps, detail: 'Owner mailing address outside California' },
+    { label: 'Corporate / trust ownership', num: corporateCount, den: totalProps, detail: 'Owner of record is LLC, trust, or other entity' },
+    { label: 'Traded in last 5 years', num: tradedRecentCount, den: propsWithSaleDate || totalProps, detail: 'Recorded sale ' + sale5yCutoff.getFullYear() + ' to present' }
+  ];
+  const ownerHtml = totalProps > 0 ? ownerRows.map(r => {
+    const pct = r.den ? (r.num/r.den)*100 : 0;
+    return `<div class="owner-row">
+      <span class="ow-label">${esc(r.label)}</span>
+      <span class="ow-bar"><span style="width:${pct.toFixed(1)}%"></span></span>
+      <span class="ow-pct">${fmt.pct(r.num, r.den)}</span>
+      <span class="ow-detail">${esc(r.detail)} · ${fmt.num(r.num)} of ${fmt.num(r.den)}</span>
+    </div>`;
+  }).join('') : '<p style="color:var(--cream-dim);font-size:.9rem">No owner-level data available.</p>';
+
   const subject = encodeURIComponent('Claim my unit at ' + (b.display_name || slug));
   const cmaSubject = encodeURIComponent('CMA request — ' + (b.display_name || slug));
   const cmaBody = encodeURIComponent('Hi Tim,\n\nI own a unit at ' + (b.display_name || slug) + '. Could you send me a comparative market analysis?\n\nUnit number:\nName:\n\nThanks');
+
+  const byYear = new Map();
+  validSales.forEach(s => {
+    if(!s.sale_date) return;
+    const y = new Date(s.sale_date).getFullYear();
+    if(isNaN(y) || y < 1990) return;
+    if(!byYear.has(y)) byYear.set(y, []);
+    byYear.get(y).push(Number(s.sale_price));
+  });
+  const yrs = [...byYear.keys()].sort((a,b)=>a-b);
+  const yearData = yrs.map(y => ({ year: y, count: byYear.get(y).length, median: median(byYear.get(y)) }));
+  const trajectoryHtml = yearData.length > 1
+    ? renderYearChart(yearData, { W: 1100, H: 240 })
+    : `<p style="color:var(--cream-dim);font-size:.9rem;text-align:center;padding:1.5rem">${yearData.length === 1 ? 'Only ' + yearData[0].count + ' recorded sale — not enough for a trajectory chart.' : 'No sale dates on record.'}</p>`;
 
   render(`<div class="container">
     <p class="crumbs"><a href="#/">Home</a><span class="sep">·</span>${cityName ? `<a href="#/city/${esc(b.city_slug)}">${esc(cityName)}</a><span class="sep">·</span>` : ''}${esc(b.display_name || slug)}</p>
@@ -884,7 +962,7 @@ async function renderBuilding(slug){
         <div class="meta">${metaItems.join('')}</div>
         ${b.tagline ? `<p style="color:var(--cream-dim);font-size:1rem;max-width:50ch">${esc(b.tagline)}</p>` : ''}
       </div>
-      <div class="map" id="building-map"><div class="map-fallback">Loading map…</div></div>
+      <div class="satellite" id="building-map"><div class="map-fallback">Loading aerial…</div></div>
     </section>
     <div class="stats-row">
       <div class="stat"><span class="label">Median sale</span><span class="value">${medianPrice ? fmt.money(medianPrice) : '—'}</span><span class="meta">across ${validSales.length} comps</span></div>
@@ -892,6 +970,26 @@ async function renderBuilding(slug){
       <div class="stat"><span class="label">Sales tracked</span><span class="value">${fmt.num(validSales.length)}</span><span class="meta">complete sale history</span></div>
       <div class="stat"><span class="label">Units indexed</span><span class="value">${fmt.num(props.length || b.unit_count || 0)}</span><span class="meta">individual condos tracked</span></div>
     </div>
+
+    <section class="panel">
+      <h2>Sales trajectory</h2>
+      <p class="sub">Every recorded sale at this building, grouped by year. Bar height = sales count. Hover any bar for the year's median.</p>
+      ${trajectoryHtml}
+    </section>
+
+    <div class="panel-split">
+      <section class="panel">
+        <h2>Unit mix</h2>
+        <p class="sub">Distribution by bedroom count across ${fmt.num(props.length)} indexed units.</p>
+        <div class="unit-mix-grid">${unitMixHtml}</div>
+      </section>
+      <section class="panel">
+        <h2>Owner intelligence</h2>
+        <p class="sub">Ownership signals derived from current county-recorder data.</p>
+        <div class="owner-rows">${ownerHtml}</div>
+      </section>
+    </div>
+
     <section class="panel">
       <h2>Recent sale comps</h2>
       <p class="sub">Last ${Math.min(recent.length, 15)} recorded sales at this building. Source: county recorder data. Updated continuously.</p>
@@ -922,16 +1020,25 @@ function initBuildingMap(coords, label){
     const lats = coords.map(c => c[0]);
     const lngs = coords.map(c => c[1]);
     center = [(Math.min(...lats) + Math.max(...lats)) / 2, (Math.min(...lngs) + Math.max(...lngs)) / 2];
-    zoom = 17;
+    zoom = 18;
   } else { center = MARKET.centroid; zoom = MARKET.zoom; }
   el.innerHTML = '';
   try {
     const map = L.map(el, { zoomControl: true, scrollWheelZoom: false }).setView(center, zoom);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>', subdomains: 'abcd', maxZoom: 19 }).addTo(map);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community',
+      maxZoom: 19
+    }).addTo(map);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png', {
+      attribution: '',
+      subdomains: 'abcd',
+      maxZoom: 19,
+      opacity: 0.85
+    }).addTo(map);
     const icon = L.divIcon({ className: '', html: '<div style="width:14px;height:14px;border-radius:50%;background:#d4a574;border:2px solid #0f131d;box-shadow:0 0 0 1.5px #d4a574"></div>', iconSize: [14,14], iconAnchor: [7,7] });
     if(Array.isArray(coords) && coords.length > 0){
       coords.forEach(c => L.marker(c, { icon }).addTo(map));
-      if(coords.length > 1) map.fitBounds(L.latLngBounds(coords), { padding: [40,40], maxZoom: 18 });
+      if(coords.length > 1) map.fitBounds(L.latLngBounds(coords), { padding: [40,40], maxZoom: 19 });
     } else { L.marker(center, { icon }).bindTooltip(label || 'Building').addTo(map); }
   } catch (e) { el.innerHTML = '<div class="map-fallback">Map could not load</div>'; }
 }
@@ -988,7 +1095,7 @@ async function renderIntelligence(){
   const priciest = stats.filter(s => s.median != null).slice().sort((a,b) => (b.median||0) - (a.median||0)).slice(0,5);
   const allRows = stats.slice().sort((a,b) => (b.median||0) - (a.median||0));
 
-  const chartSvg = renderYearChart(yearData);
+  const chartSvg = renderYearChart(yearData, { W: 900, H: 280 });
   const rowFor = s => `<tr><td><a href="#/building/${esc(s.slug)}" style="color:var(--cream);border-bottom:none">${esc(s.name)}</a></td><td class="hide-sm muted">${esc(s.city)}</td><td class="num">${fmt.num(s.recent)}</td><td class="num muted">${fmt.num(s.total)}</td><td class="num">${s.median ? fmt.money(s.median) : '—'}</td></tr>`;
   const priceRow = s => `<tr><td><a href="#/building/${esc(s.slug)}" style="color:var(--cream);border-bottom:none">${esc(s.name)}</a></td><td class="hide-sm muted">${esc(s.city)}</td><td class="num">${fmt.money(s.median)}</td><td class="num muted">${fmt.num(s.total)}</td><td class="num muted">${s.latest ? fmt.ym(s.latest.sale_date) : '—'}</td></tr>`;
   const allRow = s => `<tr><td><a href="#/building/${esc(s.slug)}" style="color:var(--cream);border-bottom:none">${esc(s.name)}</a></td><td class="hide-sm muted">${esc(s.city)}</td><td class="num muted">${fmt.num(s.units)}</td><td class="num">${fmt.num(s.total)}</td><td class="num">${s.median ? fmt.money(s.median) : '—'}</td><td class="num muted">${s.latest ? fmt.ym(s.latest.sale_date) : '—'}</td></tr>`;
@@ -1033,11 +1140,13 @@ async function renderIntelligence(){
   </div>`);
 }
 
-function renderYearChart(data){
+function renderYearChart(data, opts){
+  opts = opts || {};
+  const W = opts.W || 900, H = opts.H || 280;
   if(!Array.isArray(data) || data.length === 0){
     return '<p style="color:var(--cream-faint);font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;text-align:center;padding:2rem">No sales data</p>';
   }
-  const W = 900, H = 280, pad = { t: 20, r: 30, b: 40, l: 50 };
+  const pad = { t: 20, r: 30, b: 40, l: 50 };
   const innerW = W - pad.l - pad.r;
   const innerH = H - pad.t - pad.b;
   const maxCount = Math.max(...data.map(d => d.count), 1);
@@ -1050,11 +1159,13 @@ function renderYearChart(data){
     const v = Math.round(maxCount * i / yTicks);
     yLines.push(`<line x1="${pad.l}" y1="${y}" x2="${pad.l + innerW}" y2="${y}"></line><text x="${pad.l - 8}" y="${y + 3}" text-anchor="end">${v}</text>`);
   }
+  const showEveryNth = data.length > 18 ? Math.ceil(data.length / 18) : 1;
   const bars = data.map((d, i) => {
     const x = pad.l + step * i + (step - barW) / 2;
     const h = innerH * (d.count / maxCount);
     const y = pad.t + innerH - h;
-    return `<rect class="bar" x="${x}" y="${y}" width="${barW}" height="${h}" rx="2"><title>${d.year}: ${d.count} sales · median ${d.median ? fmt.money(d.median) : '—'}</title></rect><text x="${x + barW/2}" y="${pad.t + innerH + 18}" text-anchor="middle">${d.year}</text>`;
+    const showLabel = (i % showEveryNth === 0) || i === data.length - 1;
+    return `<rect class="bar" x="${x}" y="${y}" width="${barW}" height="${h}" rx="2"><title>${d.year}: ${d.count} sales · median ${d.median ? fmt.money(d.median) : '—'}</title></rect>${showLabel ? `<text x="${x + barW/2}" y="${pad.t + innerH + 18}" text-anchor="middle">${d.year}</text>` : ''}`;
   }).join('');
   return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Recorded condo sales by year"><g class="grid">${yLines.join('')}</g><g class="axis">${bars}</g></svg>`;
 }
